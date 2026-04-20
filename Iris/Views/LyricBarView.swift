@@ -31,9 +31,27 @@ struct LyricBarView: View {
             }
             .padding(.leading, 8)
             Spacer(minLength: 12)
-            CPUChartView(samples: store.cpuHistory)
-                .frame(width: 64, height: 24)
-                .padding(.trailing, 10)
+            HStack(spacing: 8) {
+                RingGauge(
+                    percent: store.cpuPercent,
+                    label: "CPU",
+                    tint: Color(red: 0.38, green: 0.78, blue: 1.0)
+                )
+                RingGauge(
+                    percent: store.memPercent,
+                    label: "MEM",
+                    tint: Color(red: 1.0, green: 0.72, blue: 0.30)
+                )
+                VStack(alignment: .trailing, spacing: 1) {
+                    Text(DiskMonitor.formatted(store.diskFreeBytes))
+                        .font(.system(size: 10, weight: .semibold, design: .rounded))
+                        .foregroundStyle(.white)
+                    Text("FREE")
+                        .font(.system(size: 7, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.6))
+                }
+            }
+            .padding(.trailing, 10)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(

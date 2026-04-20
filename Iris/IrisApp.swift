@@ -37,7 +37,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func startTimers() {
         timerCPU = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
             guard let self else { return }
-            self.store.recordCPU(self.cpu.sample())
+            self.store.cpuPercent = self.cpu.sample()
+            self.store.memPercent = MemoryMonitor.sample()
+            self.store.diskFreeBytes = DiskMonitor.freeBytes()
         }
         timerTrack = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             Task { @MainActor in await self?.tickTrack() }

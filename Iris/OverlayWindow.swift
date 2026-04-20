@@ -15,7 +15,7 @@ final class OverlayWindow: NSWindow {
     init<Content: View>(rootView: Content) {
         let visible = NSScreen.main?.visibleFrame ?? .zero
         let height: CGFloat = 56
-        let width = visible.width * 0.2
+        let width = max(visible.width * 0.2, 384)
         let defaultOrigin = NSPoint(
             x: visible.origin.x + (visible.width - width) / 2,
             y: visible.origin.y + visible.height - height

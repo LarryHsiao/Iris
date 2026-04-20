@@ -8,13 +8,6 @@ final class MonitorStore {
     var isPlaying: Bool = false
     var artworkURL: URL?
     var progress: Double = 0
-    var cpuHistory: [Double] = []
-
-    func recordCPU(_ value: Double) {
-        cpuPercent = value
-        cpuHistory.append(value)
-        if cpuHistory.count > 30 {
-            cpuHistory.removeFirst(cpuHistory.count - 30)
-        }
-    }
+    var memPercent: Double = 0
+    var diskFreeBytes: Int64 = 0
 }
