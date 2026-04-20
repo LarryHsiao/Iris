@@ -1,18 +1,18 @@
 # Iris
 
-An all-in-one on-screen monitor for macOS.
+A lightweight, always-on-top HUD for macOS — live system vitals and synced song lyrics in a single draggable overlay, so you never have to tab away.
 
 > Status: **work in progress.**
 
-A thin, click-through overlay pinned to the top of the screen that surfaces the things you'd otherwise keep tabbing away to check — system vitals, now-playing media, and more — in a single glance.
-
 ![Iris overlay showing lyrics and system ring gauges](docs/screenshot.png)
 
-## Current capabilities
+## Features
 
-- **Now-playing lyric bar** — follows Spotify's current track and streams synced lyrics from [lrclib.net](https://lrclib.net).
-- **Live CPU usage** — sampled via `host_statistics64`.
-- **Menu-bar control** — toggle the overlay on/off or quit from the status item.
+- **Synced lyrics** — follows Spotify's current track and streams time-synced lyrics from [lrclib.net](https://lrclib.net), scrolling in real time.
+- **System ring gauges** — CPU, memory, and disk usage rendered as compact ring indicators.
+- **Draggable overlay** — float it anywhere on screen; snaps to the top edge on release.
+- **Click-through** — fully transparent to mouse events so it never interrupts your workflow.
+- **Menu-bar control** — toggle visibility or quit via the `ʟ` status item.
 
 ## Planned
 
