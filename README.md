@@ -1,5 +1,7 @@
 # Iris
 
+<img src="docs/icon.svg" width="96" align="right" />
+
 A lightweight, always-on-top HUD for macOS — live system vitals and synced song lyrics in a single draggable overlay, so you never have to tab away.
 
 > Status: **work in progress.**
