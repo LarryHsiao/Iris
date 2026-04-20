@@ -6,6 +6,8 @@ An all-in-one on-screen monitor for macOS.
 
 A thin, click-through overlay pinned to the top of the screen that surfaces the things you'd otherwise keep tabbing away to check — system vitals, now-playing media, and more — in a single glance.
 
+![Iris overlay showing lyrics and system ring gauges](docs/screenshot.png)
+
 ## Current capabilities
 
 - **Now-playing lyric bar** — follows Spotify's current track and streams synced lyrics from [lrclib.net](https://lrclib.net).
