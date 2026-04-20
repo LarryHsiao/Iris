@@ -31,10 +31,9 @@ struct LyricBarView: View {
             }
             .padding(.leading, 8)
             Spacer(minLength: 12)
-            Text(String(format: "CPU %3.0f%%", store.cpuPercent))
-                .font(.system(size: 11, design: .monospaced))
-                .foregroundStyle(.white.opacity(0.8))
-                .padding(.trailing, 12)
+            CPUChartView(samples: store.cpuHistory)
+                .frame(width: 64, height: 24)
+                .padding(.trailing, 10)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
