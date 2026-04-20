@@ -40,5 +40,18 @@ struct LyricBarView: View {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .fill(Color.black.opacity(0.45))
         )
+        .overlay(alignment: .bottom) {
+            if store.isPlaying {
+                GeometryReader { geo in
+                    Capsule()
+                        .fill(Color(red: 0.11, green: 0.84, blue: 0.38))
+                        .frame(width: geo.size.width * store.progress, height: 2)
+                        .animation(.linear(duration: 0.4), value: store.progress)
+                }
+                .frame(height: 2)
+                .padding(.horizontal, 6)
+                .padding(.bottom, 2)
+            }
+        }
     }
 }

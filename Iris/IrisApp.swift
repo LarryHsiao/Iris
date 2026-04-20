@@ -50,9 +50,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             store.currentLine = "—"
             store.isPlaying = false
             store.artworkURL = nil
+            store.progress = 0
             return
         }
         store.isPlaying = true
+        store.progress = track.durationSeconds > 0
+            ? min(max(track.positionSeconds / track.durationSeconds, 0), 1)
+            : 0
         if track.id != currentTrackID {
             currentTrackID = track.id
             store.artworkURL = track.artworkURL.flatMap(URL.init(string:))
