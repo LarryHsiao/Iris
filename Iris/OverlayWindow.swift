@@ -5,10 +5,11 @@ final class OverlayWindow: NSWindow {
     init<Content: View>(rootView: Content) {
         let visible = NSScreen.main?.visibleFrame ?? .zero
         let height: CGFloat = 28
+        let width = visible.width * 0.2
         let rect = NSRect(
-            x: visible.origin.x,
+            x: visible.origin.x + (visible.width - width) / 2,
             y: visible.origin.y + visible.height - height,
-            width: visible.width,
+            width: width,
             height: height
         )
         super.init(

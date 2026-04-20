@@ -48,10 +48,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let track = await Task.detached { SpotifyClient.currentTrack() }.value
         guard let track else {
             store.currentLine = "—"
+            store.isPlaying = false
+            store.artworkURL = nil
             return
         }
+        store.isPlaying = true
         if track.id != currentTrackID {
             currentTrackID = track.id
+            store.artworkURL = track.artworkURL.flatMap(URL.init(string:))
             lyrics = await LyricsClient.fetch(track: track.name, artist: track.artist)
         }
         if let line = lyrics?.line(at: track.positionSeconds) {

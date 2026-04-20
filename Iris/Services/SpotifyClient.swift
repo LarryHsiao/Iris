@@ -5,6 +5,7 @@ struct SpotifyTrack: Equatable {
     let name: String
     let artist: String
     let positionSeconds: Double
+    let artworkURL: String?
 }
 
 enum SpotifyClient {
@@ -14,20 +15,26 @@ enum SpotifyClient {
             if it is running then
                 try
                     set t to current track
-                    return (id of t) & "|" & (name of t) & "|" & (artist of t) & "|" & (player position as text)
+                    set art to ""
+                    try
+                        set art to artwork url of t
+                    end try
+                    return (id of t) & "|" & (name of t) & "|" & (artist of t) & "|" & (player position as text) & "|" & art
                 end try
             end if
             return ""
         end tell
         """
         guard let out = run(script), !out.isEmpty else { return nil }
-        let parts = out.split(separator: "|", maxSplits: 3, omittingEmptySubsequences: false)
-        guard parts.count == 4, let pos = Double(parts[3]) else { return nil }
+        let parts = out.split(separator: "|", maxSplits: 4, omittingEmptySubsequences: false)
+        guard parts.count >= 4, let pos = Double(parts[3]) else { return nil }
+        let art = parts.count >= 5 ? String(parts[4]) : ""
         return SpotifyTrack(
             id: String(parts[0]),
             name: String(parts[1]),
             artist: String(parts[2]),
-            positionSeconds: pos
+            positionSeconds: pos,
+            artworkURL: art.isEmpty ? nil : art
         )
     }
 

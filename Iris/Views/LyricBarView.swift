@@ -5,12 +5,30 @@ struct LyricBarView: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            Spacer(minLength: 12)
-            Text(store.currentLine)
-                .font(.system(size: 13, weight: .medium, design: .rounded))
-                .foregroundStyle(.white)
-                .lineLimit(1)
-                .truncationMode(.tail)
+            HStack(spacing: 6) {
+                if store.isPlaying {
+                    AsyncImage(url: store.artworkURL) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image.resizable().scaledToFill()
+                        default:
+                            Image(systemName: "music.note")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundStyle(.white.opacity(0.7))
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .background(Color.white.opacity(0.1))
+                        }
+                    }
+                    .frame(width: 18, height: 18)
+                    .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+                }
+                Text(store.currentLine)
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+            }
+            .padding(.leading, 8)
             Spacer(minLength: 12)
             Text(String(format: "CPU %3.0f%%", store.cpuPercent))
                 .font(.system(size: 11, design: .monospaced))
@@ -18,6 +36,9 @@ struct LyricBarView: View {
                 .padding(.trailing, 12)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black.opacity(0.45))
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color.black.opacity(0.45))
+        )
     }
 }
