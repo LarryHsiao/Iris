@@ -9,9 +9,10 @@ A lightweight, always-on-top HUD for macOS — live system vitals and synced son
 ## Features
 
 - **Synced lyrics** — follows Spotify's current track and streams time-synced lyrics from [lrclib.net](https://lrclib.net), scrolling in real time.
-- **System ring gauges** — CPU, memory, and disk usage rendered as compact ring indicators.
-- **Draggable overlay** — float it anywhere on screen; snaps to the top edge on release.
-- **Click-through** — fully transparent to mouse events so it never interrupts your workflow.
+- **Album artwork** — shows the current track's cover art alongside the lyric line.
+- **Playback progress bar** — a thin bar at the bottom of the overlay tracks position within the current track.
+- **System ring gauges** — CPU and memory usage as compact ring indicators; disk shows free space as a text label.
+- **Draggable overlay** — float it anywhere on screen; position is saved and restored across launches.
 - **Menu-bar control** — toggle visibility or quit via the `ʟ` status item.
 
 ## Planned
