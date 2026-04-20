@@ -19,14 +19,15 @@ struct LyricBarView: View {
                                 .background(Color.white.opacity(0.1))
                         }
                     }
-                    .frame(width: 18, height: 18)
-                    .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+                    .frame(width: 36, height: 36)
+                    .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
                 }
                 Text(store.currentLine)
                     .font(.system(size: 13, weight: .medium, design: .rounded))
                     .foregroundStyle(.white)
-                    .lineLimit(1)
+                    .lineLimit(2)
                     .truncationMode(.tail)
+                    .multilineTextAlignment(.leading)
             }
             .padding(.leading, 8)
             Spacer(minLength: 12)
