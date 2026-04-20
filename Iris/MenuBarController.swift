@@ -7,7 +7,13 @@ final class MenuBarController: NSObject {
     override init() {
         item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         super.init()
-        item.button?.title = "🌸"
+        item.button?.attributedTitle = NSAttributedString(
+            string: "ʟ",
+            attributes: [
+                .font: NSFont.systemFont(ofSize: 17, weight: .bold),
+                .foregroundColor: NSColor.labelColor,
+            ]
+        )
 
         let menu = NSMenu()
         let toggle = NSMenuItem(
