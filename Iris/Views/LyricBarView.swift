@@ -2,25 +2,27 @@ import SwiftUI
 
 struct LyricBarView: View {
     let store: MonitorStore
-
     var body: some View {
         HStack(spacing: 16) {
             HStack(spacing: 6) {
-                if store.isPlaying {
-                    AsyncImage(url: store.artworkURL) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image.resizable().scaledToFill()
-                        default:
-                            Image(systemName: "music.note")
-                                .font(.system(size: 10, weight: .semibold))
-                                .foregroundStyle(.white.opacity(0.7))
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .background(Color.white.opacity(0.1))
+                if store.hasTrack {
+                    Button(action: { store.playPause() }) {
+                        AsyncImage(url: store.artworkURL) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image.resizable().scaledToFill()
+                            default:
+                                Image(systemName: "music.note")
+                                    .font(.system(size: 10, weight: .semibold))
+                                    .foregroundStyle(.white.opacity(0.7))
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .background(Color.white.opacity(0.1))
+                            }
                         }
+                        .frame(width: 36, height: 36)
+                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
                     }
-                    .frame(width: 36, height: 36)
-                    .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                    .buttonStyle(.plain)
                 }
                 Text(store.currentLine)
                     .font(.system(size: 13, weight: .medium, design: .rounded))

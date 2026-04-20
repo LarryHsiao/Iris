@@ -7,6 +7,7 @@ struct SpotifyTrack: Equatable {
     let positionSeconds: Double
     let durationSeconds: Double
     let artworkURL: String?
+    let isPlaying: Bool
 }
 
 enum SpotifyClient {
@@ -20,26 +21,38 @@ enum SpotifyClient {
                     try
                         set art to artwork url of t
                     end try
-                    return (id of t) & "|" & (name of t) & "|" & (artist of t) & "|" & (player position as text) & "|" & (duration of t as text) & "|" & art
+                    set state to player state as text
+                    return (id of t) & "|" & (name of t) & "|" & (artist of t) & "|" & (player position as text) & "|" & (duration of t as text) & "|" & art & "|" & state
                 end try
             end if
             return ""
         end tell
         """
         guard let out = run(script), !out.isEmpty else { return nil }
-        let parts = out.split(separator: "|", maxSplits: 5, omittingEmptySubsequences: false)
+        let parts = out.split(separator: "|", maxSplits: 6, omittingEmptySubsequences: false)
         guard parts.count >= 4, let pos = Double(parts[3]) else { return nil }
         let rawDuration = parts.count >= 5 ? Double(parts[4]) ?? 0 : 0
         let duration = rawDuration > 1000 ? rawDuration / 1000 : rawDuration
         let art = parts.count >= 6 ? String(parts[5]) : ""
+        let state = parts.count >= 7 ? String(parts[6]) : "playing"
         return SpotifyTrack(
             id: String(parts[0]),
             name: String(parts[1]),
             artist: String(parts[2]),
             positionSeconds: pos,
             durationSeconds: duration,
-            artworkURL: art.isEmpty ? nil : art
+            artworkURL: art.isEmpty ? nil : art,
+            isPlaying: state == "playing"
         )
+    }
+
+    static func playPause() {
+        let script = """
+        tell application "Spotify"
+            if it is running then playpause
+        end tell
+        """
+        _ = run(script)
     }
 
     private static func run(_ source: String) -> String? {

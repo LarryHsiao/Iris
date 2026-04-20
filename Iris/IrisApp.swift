@@ -50,12 +50,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let track = await Task.detached { SpotifyClient.currentTrack() }.value
         guard let track else {
             store.currentLine = "—"
+            store.hasTrack = false
             store.isPlaying = false
             store.artworkURL = nil
             store.progress = 0
             return
         }
-        store.isPlaying = true
+        store.hasTrack = true
+        store.isPlaying = track.isPlaying
         store.progress = track.durationSeconds > 0
             ? min(max(track.positionSeconds / track.durationSeconds, 0), 1)
             : 0
