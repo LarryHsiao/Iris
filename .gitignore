@@ -1,0 +1,6 @@
+build/
+.claude/
+ExportOptions.plist
+xcuserdata/
+*.xcuserstate
+DerivedData/
