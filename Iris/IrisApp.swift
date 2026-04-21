@@ -15,6 +15,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var menuBar: MenuBarController?
     private let store = MonitorStore()
     private let cpu = CPUMonitor()
+    private let net = NetworkMonitor()
     private var timerCPU: Timer?
     private var timerTrack: Timer?
     private var currentTrackID: String?
@@ -40,6 +41,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.store.cpuPercent = self.cpu.sample()
             self.store.memPercent = MemoryMonitor.sample()
             self.store.diskFreeBytes = DiskMonitor.freeBytes()
+            self.store.gpuPercent = GPUMonitor.sample()
+            let net = self.net.sample()
+            self.store.netRxBytesPerSec = net.rxBytesPerSec
+            self.store.netTxBytesPerSec = net.txBytesPerSec
+            let battery = BatteryMonitor.sample()
+            self.store.batteryPercent = battery.percent
+            self.store.batteryCharging = battery.isCharging
+            self.store.batteryPresent = battery.isPresent
         }
         timerTrack = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             Task { @MainActor in await self?.tickTrack() }

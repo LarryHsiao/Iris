@@ -34,10 +34,33 @@ struct LyricBarView: View {
             .padding(.leading, 8)
             Spacer(minLength: 12)
             HStack(spacing: 8) {
+                VStack(alignment: .trailing, spacing: 1) {
+                    HStack(spacing: 2) {
+                        Image(systemName: "arrow.down")
+                            .font(.system(size: 7, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.6))
+                        Text(NetworkMonitor.format(bytesPerSec: store.netRxBytesPerSec))
+                            .font(.system(size: 9, weight: .semibold, design: .rounded))
+                            .foregroundStyle(.white)
+                    }
+                    HStack(spacing: 2) {
+                        Image(systemName: "arrow.up")
+                            .font(.system(size: 7, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.6))
+                        Text(NetworkMonitor.format(bytesPerSec: store.netTxBytesPerSec))
+                            .font(.system(size: 9, weight: .semibold, design: .rounded))
+                            .foregroundStyle(.white)
+                    }
+                }
                 RingGauge(
                     percent: store.cpuPercent,
                     label: "CPU",
                     tint: Color(red: 0.38, green: 0.78, blue: 1.0)
+                )
+                RingGauge(
+                    percent: store.gpuPercent,
+                    label: "GPU",
+                    tint: Color(red: 0.75, green: 0.55, blue: 1.0)
                 )
                 RingGauge(
                     percent: store.memPercent,
@@ -51,6 +74,9 @@ struct LyricBarView: View {
                     Text("FREE")
                         .font(.system(size: 7, weight: .medium))
                         .foregroundStyle(.white.opacity(0.6))
+                }
+                if store.batteryPresent {
+                    BatteryTile(percent: store.batteryPercent, charging: store.batteryCharging)
                 }
             }
             .padding(.trailing, 10)

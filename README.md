@@ -19,7 +19,6 @@ A lightweight, always-on-top HUD for macOS — live system vitals and synced son
 
 ## Planned
 
-- GPU / memory / network / battery tiles
 - Additional media sources (Apple Music, system-wide Now Playing)
 - User-configurable layout and themes
 - Per-display positioning
