@@ -5,7 +5,7 @@ struct IrisApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
 
     var body: some Scene {
-        Settings { EmptyView() }
+        SwiftUI.Settings { EmptyView() }
     }
 }
 
@@ -13,7 +13,9 @@ struct IrisApp: App {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var overlay: OverlayWindow?
     private var menuBar: MenuBarController?
+    private var settingsWindow: SettingsWindow?
     private let store = MonitorStore()
+    private let settings = Settings.shared
     private let cpu = CPUMonitor()
     private let net = NetworkMonitor()
     private var timerCPU: Timer?
@@ -22,7 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var lyrics: SyncedLyrics?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        overlay = OverlayWindow(rootView: LyricBarView(store: store))
+        overlay = OverlayWindow(rootView: LyricBarView(store: store, settings: settings))
         overlay?.orderFrontRegardless()
 
         let bar = MenuBarController()
@@ -30,13 +32,38 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             guard let win = self?.overlay else { return }
             if win.isVisible { win.orderOut(nil) } else { win.orderFrontRegardless() }
         }
+        bar.onOpenSettings = { [weak self] in self?.openSettings() }
         menuBar = bar
+
+        settings.onApplied = { [weak self] in self?.restartSystemTimer() }
 
         startTimers()
     }
 
+    private func openSettings() {
+        if settingsWindow == nil {
+            settingsWindow = SettingsWindow(
+                settings: settings,
+                demoStore: MonitorStore.demo(),
+                onResetPosition: { [weak self] in self?.overlay?.resetPosition() }
+            )
+        }
+        settingsWindow?.show()
+    }
+
     private func startTimers() {
-        timerCPU = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
+        scheduleSystemTimer()
+        timerTrack = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+            Task { @MainActor in await self?.tickTrack() }
+        }
+    }
+
+    private func scheduleSystemTimer() {
+        timerCPU?.invalidate()
+        timerCPU = Timer.scheduledTimer(
+            withTimeInterval: settings.samplingInterval,
+            repeats: true
+        ) { [weak self] _ in
             guard let self else { return }
             self.store.cpuPercent = self.cpu.sample()
             self.store.memPercent = MemoryMonitor.sample()
@@ -50,9 +77,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.store.batteryCharging = battery.isCharging
             self.store.batteryPresent = battery.isPresent
         }
-        timerTrack = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
-            Task { @MainActor in await self?.tickTrack() }
-        }
+    }
+
+    private func restartSystemTimer() {
+        scheduleSystemTimer()
     }
 
     private func tickTrack() async {

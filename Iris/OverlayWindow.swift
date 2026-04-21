@@ -11,18 +11,14 @@ private final class DraggableHostingView<Content: View>: NSHostingView<Content> 
 
 final class OverlayWindow: NSWindow {
     private static let positionKey = "OverlayWindow.origin"
+    private static let height: CGFloat = 56
 
     init<Content: View>(rootView: Content) {
         let visible = NSScreen.main?.visibleFrame ?? .zero
-        let height: CGFloat = 56
-        let width = max(visible.width * 0.24, 448)
-        let defaultOrigin = NSPoint(
-            x: visible.origin.x + (visible.width - width) / 2,
-            y: visible.origin.y + visible.height - height
-        )
-        let origin = OverlayWindow.restoredOrigin(size: NSSize(width: width, height: height))
-            ?? defaultOrigin
-        let rect = NSRect(origin: origin, size: NSSize(width: width, height: height))
+        let size = OverlayWindow.defaultSize(visible: visible)
+        let origin = OverlayWindow.restoredOrigin(size: size)
+            ?? OverlayWindow.defaultOrigin(visible: visible, size: size)
+        let rect = NSRect(origin: origin, size: size)
         super.init(
             contentRect: rect,
             styleMask: [.borderless],
@@ -51,10 +47,29 @@ final class OverlayWindow: NSWindow {
     override var canBecomeKey: Bool { false }
     override var canBecomeMain: Bool { false }
 
+    func resetPosition() {
+        let visible = NSScreen.main?.visibleFrame ?? .zero
+        let size = OverlayWindow.defaultSize(visible: visible)
+        let origin = OverlayWindow.defaultOrigin(visible: visible, size: size)
+        UserDefaults.standard.removeObject(forKey: OverlayWindow.positionKey)
+        setFrame(NSRect(origin: origin, size: size), display: true)
+    }
+
     @objc private func handleWindowDidMove(_ note: Notification) {
         UserDefaults.standard.set(
             NSStringFromPoint(frame.origin),
             forKey: OverlayWindow.positionKey
+        )
+    }
+
+    private static func defaultSize(visible: NSRect) -> NSSize {
+        NSSize(width: max(visible.width * 0.24, 448), height: height)
+    }
+
+    private static func defaultOrigin(visible: NSRect, size: NSSize) -> NSPoint {
+        NSPoint(
+            x: visible.origin.x + (visible.width - size.width) / 2,
+            y: visible.origin.y + visible.height - size.height
         )
     }
 

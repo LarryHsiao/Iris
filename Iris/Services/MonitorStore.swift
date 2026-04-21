@@ -21,4 +21,22 @@ final class MonitorStore {
     func playPause() {
         SpotifyClient.playPause()
     }
+
+    static func demo() -> MonitorStore {
+        let s = MonitorStore()
+        s.currentLine = "Somebody told me — The Killers"
+        s.hasTrack = true
+        s.isPlaying = true
+        s.progress = 0.42
+        s.cpuPercent = 37
+        s.gpuPercent = 22
+        s.memPercent = 61
+        s.diskFreeBytes = 128_000_000_000
+        s.netRxBytesPerSec = 1_250_000
+        s.netTxBytesPerSec = 180_000
+        s.batteryPercent = 78
+        s.batteryCharging = true
+        s.batteryPresent = true
+        return s
+    }
 }

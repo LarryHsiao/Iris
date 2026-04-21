@@ -2,10 +2,12 @@ import SwiftUI
 
 struct LyricBarView: View {
     let store: MonitorStore
+    let settings: Settings
+
     var body: some View {
         HStack(spacing: 16) {
             HStack(spacing: 6) {
-                if store.hasTrack {
+                if settings.showArtwork && store.hasTrack {
                     Button(action: { store.playPause() }) {
                         AsyncImage(url: store.artworkURL) { phase in
                             switch phase {
@@ -24,59 +26,22 @@ struct LyricBarView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                Text(store.currentLine)
-                    .font(.system(size: 13, weight: .medium, design: .rounded))
-                    .foregroundStyle(.white)
-                    .lineLimit(2)
-                    .truncationMode(.tail)
-                    .multilineTextAlignment(.leading)
+                if settings.showLyrics {
+                    Text(store.currentLine)
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundStyle(.white)
+                        .lineLimit(2)
+                        .truncationMode(.tail)
+                        .multilineTextAlignment(.leading)
+                }
             }
             .padding(.leading, 8)
             Spacer(minLength: 12)
             HStack(spacing: 8) {
-                VStack(alignment: .trailing, spacing: 1) {
-                    HStack(spacing: 2) {
-                        Image(systemName: "arrow.down")
-                            .font(.system(size: 7, weight: .semibold))
-                            .foregroundStyle(.white.opacity(0.6))
-                        Text(NetworkMonitor.format(bytesPerSec: store.netRxBytesPerSec))
-                            .font(.system(size: 9, weight: .semibold, design: .rounded))
-                            .foregroundStyle(.white)
+                ForEach(settings.tileOrder) { tile in
+                    if settings.isVisible(tile) {
+                        tileView(for: tile)
                     }
-                    HStack(spacing: 2) {
-                        Image(systemName: "arrow.up")
-                            .font(.system(size: 7, weight: .semibold))
-                            .foregroundStyle(.white.opacity(0.6))
-                        Text(NetworkMonitor.format(bytesPerSec: store.netTxBytesPerSec))
-                            .font(.system(size: 9, weight: .semibold, design: .rounded))
-                            .foregroundStyle(.white)
-                    }
-                }
-                RingGauge(
-                    percent: store.cpuPercent,
-                    label: "CPU",
-                    tint: Color(red: 0.38, green: 0.78, blue: 1.0)
-                )
-                RingGauge(
-                    percent: store.gpuPercent,
-                    label: "GPU",
-                    tint: Color(red: 0.75, green: 0.55, blue: 1.0)
-                )
-                RingGauge(
-                    percent: store.memPercent,
-                    label: "MEM",
-                    tint: Color(red: 1.0, green: 0.72, blue: 0.30)
-                )
-                VStack(alignment: .trailing, spacing: 1) {
-                    Text(DiskMonitor.formatted(store.diskFreeBytes))
-                        .font(.system(size: 10, weight: .semibold, design: .rounded))
-                        .foregroundStyle(.white)
-                    Text("FREE")
-                        .font(.system(size: 7, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.6))
-                }
-                if store.batteryPresent {
-                    BatteryTile(percent: store.batteryPercent, charging: store.batteryCharging)
                 }
             }
             .padding(.trailing, 10)
@@ -87,7 +52,7 @@ struct LyricBarView: View {
                 .fill(Color.black.opacity(0.45))
         )
         .overlay(alignment: .bottom) {
-            if store.isPlaying {
+            if settings.showProgress && store.isPlaying {
                 GeometryReader { geo in
                     Capsule()
                         .fill(Color(red: 0.11, green: 0.84, blue: 0.38))
@@ -98,6 +63,64 @@ struct LyricBarView: View {
                 .padding(.horizontal, 6)
                 .padding(.bottom, 2)
             }
+        }
+    }
+
+    @ViewBuilder
+    private func tileView(for tile: Tile) -> some View {
+        switch tile {
+        case .network: networkTile
+        case .cpu: RingGauge(
+            percent: store.cpuPercent,
+            label: "CPU",
+            tint: Color(red: 0.38, green: 0.78, blue: 1.0)
+        )
+        case .gpu: RingGauge(
+            percent: store.gpuPercent,
+            label: "GPU",
+            tint: Color(red: 0.75, green: 0.55, blue: 1.0)
+        )
+        case .mem: RingGauge(
+            percent: store.memPercent,
+            label: "MEM",
+            tint: Color(red: 1.0, green: 0.72, blue: 0.30)
+        )
+        case .disk: diskTile
+        case .battery: if store.batteryPresent {
+            BatteryTile(percent: store.batteryPercent, charging: store.batteryCharging)
+        }
+        }
+    }
+
+    private var networkTile: some View {
+        VStack(alignment: .trailing, spacing: 1) {
+            HStack(spacing: 2) {
+                Image(systemName: "arrow.down")
+                    .font(.system(size: 7, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.6))
+                Text(NetworkMonitor.format(bytesPerSec: store.netRxBytesPerSec))
+                    .font(.system(size: 9, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white)
+            }
+            HStack(spacing: 2) {
+                Image(systemName: "arrow.up")
+                    .font(.system(size: 7, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.6))
+                Text(NetworkMonitor.format(bytesPerSec: store.netTxBytesPerSec))
+                    .font(.system(size: 9, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white)
+            }
+        }
+    }
+
+    private var diskTile: some View {
+        VStack(alignment: .trailing, spacing: 1) {
+            Text(DiskMonitor.formatted(store.diskFreeBytes))
+                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                .foregroundStyle(.white)
+            Text("FREE")
+                .font(.system(size: 7, weight: .medium))
+                .foregroundStyle(.white.opacity(0.6))
         }
     }
 }

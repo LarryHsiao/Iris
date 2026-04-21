@@ -3,6 +3,7 @@ import AppKit
 final class MenuBarController: NSObject {
     private let item: NSStatusItem
     var onToggle: (() -> Void)?
+    var onOpenSettings: (() -> Void)?
 
     override init() {
         item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -14,6 +15,14 @@ final class MenuBarController: NSObject {
         }
 
         let menu = NSMenu()
+        let settings = NSMenuItem(
+            title: "Settings…",
+            action: #selector(openSettingsAction),
+            keyEquivalent: ","
+        )
+        settings.target = self
+        menu.addItem(settings)
+        menu.addItem(.separator())
         let toggle = NSMenuItem(
             title: "Toggle Overlay",
             action: #selector(toggleAction),
@@ -32,5 +41,9 @@ final class MenuBarController: NSObject {
 
     @objc private func toggleAction() {
         onToggle?()
+    }
+
+    @objc private func openSettingsAction() {
+        onOpenSettings?()
     }
 }
