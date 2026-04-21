@@ -30,6 +30,18 @@ A lightweight, always-on-top HUD for macOS — live system vitals and synced son
 - Xcode 15+
 - Spotify desktop app (for lyrics)
 
+## Install
+
+Download `Iris.dmg` from the [latest release](https://github.com/LarryHsiao/Iris/releases/latest), mount it, and drag `Iris.app` into `Applications`.
+
+**First launch:** because Iris is a menu-bar-only app (no Dock icon), the usual Gatekeeper confirmation dialog can end up hidden when you double-click. Instead, **right-click `Iris.app` → Open** the first time. After that, launch it normally.
+
+If the app appears to launch but nothing shows up, the quarantine flag is still attached — clear it with:
+
+```bash
+xattr -rd com.apple.quarantine /Applications/Iris.app
+```
+
 ## Build
 
 Open `Iris.xcodeproj` in Xcode and run the `Iris` scheme.
