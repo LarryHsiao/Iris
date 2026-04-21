@@ -34,6 +34,7 @@ final class Settings {
     var samplingInterval: Double
     var launchAtLogin: Bool
     var tileOrder: [Tile]
+    var overlayWidth: Double
 
     var onApplied: (() -> Void)?
 
@@ -51,7 +52,8 @@ final class Settings {
         showBattery: Bool,
         samplingInterval: Double,
         launchAtLogin: Bool,
-        tileOrder: [Tile]
+        tileOrder: [Tile],
+        overlayWidth: Double
     ) {
         self.showLyrics = showLyrics
         self.showArtwork = showArtwork
@@ -65,6 +67,7 @@ final class Settings {
         self.samplingInterval = samplingInterval
         self.launchAtLogin = launchAtLogin
         self.tileOrder = tileOrder
+        self.overlayWidth = overlayWidth
     }
 
     func isVisible(_ tile: Tile) -> Bool {
@@ -102,6 +105,7 @@ final class Settings {
         static let showBattery = prefix + "showBattery"
         static let samplingInterval = prefix + "samplingInterval"
         static let tileOrder = prefix + "tileOrder"
+        static let overlayWidth = prefix + "overlayWidth"
     }
 
     static func load() -> Settings {
@@ -118,7 +122,8 @@ final class Settings {
             showBattery: d.object(forKey: Key.showBattery) as? Bool ?? true,
             samplingInterval: d.object(forKey: Key.samplingInterval) as? Double ?? 2.0,
             launchAtLogin: LoginItem.isEnabled,
-            tileOrder: loadTileOrder(d)
+            tileOrder: loadTileOrder(d),
+            overlayWidth: d.object(forKey: Key.overlayWidth) as? Double ?? 384
         )
     }
 
@@ -142,6 +147,7 @@ final class Settings {
         d.set(showBattery, forKey: Key.showBattery)
         d.set(samplingInterval, forKey: Key.samplingInterval)
         d.set(tileOrder.map(\.rawValue), forKey: Key.tileOrder)
+        d.set(overlayWidth, forKey: Key.overlayWidth)
     }
 
     func copy() -> Settings {
@@ -157,7 +163,8 @@ final class Settings {
             showBattery: showBattery,
             samplingInterval: samplingInterval,
             launchAtLogin: launchAtLogin,
-            tileOrder: tileOrder
+            tileOrder: tileOrder,
+            overlayWidth: overlayWidth
         )
     }
 
@@ -174,6 +181,7 @@ final class Settings {
         samplingInterval = other.samplingInterval
         launchAtLogin = other.launchAtLogin
         tileOrder = other.tileOrder
+        overlayWidth = other.overlayWidth
     }
 
     func equals(_ other: Settings) -> Bool {
@@ -189,5 +197,6 @@ final class Settings {
         && samplingInterval == other.samplingInterval
         && launchAtLogin == other.launchAtLogin
         && tileOrder == other.tileOrder
+        && overlayWidth == other.overlayWidth
     }
 }

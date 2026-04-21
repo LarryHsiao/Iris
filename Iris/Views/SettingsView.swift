@@ -47,13 +47,22 @@ struct SettingsView: View {
                             .frame(width: 48, alignment: .trailing)
                     }
                 }
-                Section("System") {
-                    Toggle("Launch at login", isOn: $draft.launchAtLogin)
+                Section("Overlay") {
                     HStack {
-                        Text("Overlay position")
+                        Text("Width")
+                        Slider(value: $draft.overlayWidth, in: 320...1200, step: 10)
+                        Text(String(format: "%.0f", draft.overlayWidth))
+                            .font(.system(.body, design: .monospaced))
+                            .frame(width: 48, alignment: .trailing)
+                    }
+                    HStack {
+                        Text("Position")
                         Spacer()
                         Button("Reset to Default", action: onResetPosition)
                     }
+                }
+                Section("System") {
+                    Toggle("Launch at login", isOn: $draft.launchAtLogin)
                 }
             }
             .formStyle(.grouped)
@@ -107,8 +116,8 @@ struct SettingsView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             LyricBarView(store: demoStore, settings: draft)
-                .frame(height: 56)
-                .frame(maxWidth: .infinity)
+                .frame(width: min(draft.overlayWidth, 488), height: 56)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 

@@ -24,7 +24,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var lyrics: SyncedLyrics?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        overlay = OverlayWindow(rootView: LyricBarView(store: store, settings: settings))
+        overlay = OverlayWindow(
+            rootView: LyricBarView(store: store, settings: settings),
+            width: settings.overlayWidth
+        )
         overlay?.orderFrontRegardless()
 
         let bar = MenuBarController()
@@ -35,7 +38,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         bar.onOpenSettings = { [weak self] in self?.openSettings() }
         menuBar = bar
 
-        settings.onApplied = { [weak self] in self?.restartSystemTimer() }
+        settings.onApplied = { [weak self] in
+            guard let self else { return }
+            self.restartSystemTimer()
+            self.overlay?.setWidth(self.settings.overlayWidth)
+        }
 
         startTimers()
     }

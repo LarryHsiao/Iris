@@ -12,10 +12,12 @@ private final class DraggableHostingView<Content: View>: NSHostingView<Content> 
 final class OverlayWindow: NSWindow {
     private static let positionKey = "OverlayWindow.origin"
     private static let height: CGFloat = 56
+    static let minWidth: CGFloat = 320
+    static let maxWidth: CGFloat = 1200
 
-    init<Content: View>(rootView: Content) {
+    init<Content: View>(rootView: Content, width: CGFloat) {
         let visible = NSScreen.main?.visibleFrame ?? .zero
-        let size = OverlayWindow.defaultSize(visible: visible)
+        let size = NSSize(width: OverlayWindow.clamp(width), height: OverlayWindow.height)
         let origin = OverlayWindow.restoredOrigin(size: size)
             ?? OverlayWindow.defaultOrigin(visible: visible, size: size)
         let rect = NSRect(origin: origin, size: size)
@@ -47,12 +49,17 @@ final class OverlayWindow: NSWindow {
     override var canBecomeKey: Bool { false }
     override var canBecomeMain: Bool { false }
 
+    func setWidth(_ width: CGFloat) {
+        var next = frame
+        next.size.width = OverlayWindow.clamp(width)
+        setFrame(next, display: true)
+    }
+
     func resetPosition() {
         let visible = NSScreen.main?.visibleFrame ?? .zero
-        let size = OverlayWindow.defaultSize(visible: visible)
-        let origin = OverlayWindow.defaultOrigin(visible: visible, size: size)
+        let origin = OverlayWindow.defaultOrigin(visible: visible, size: frame.size)
         UserDefaults.standard.removeObject(forKey: OverlayWindow.positionKey)
-        setFrame(NSRect(origin: origin, size: size), display: true)
+        setFrameOrigin(origin)
     }
 
     @objc private func handleWindowDidMove(_ note: Notification) {
@@ -62,8 +69,8 @@ final class OverlayWindow: NSWindow {
         )
     }
 
-    private static func defaultSize(visible: NSRect) -> NSSize {
-        NSSize(width: max(visible.width * 0.24, 448), height: height)
+    private static func clamp(_ width: CGFloat) -> CGFloat {
+        min(max(width, minWidth), maxWidth)
     }
 
     private static func defaultOrigin(visible: NSRect, size: NSSize) -> NSPoint {
