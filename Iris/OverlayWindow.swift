@@ -16,6 +16,9 @@ final class OverlayWindow: NSWindow {
     static let minWidth: CGFloat = 320
     static let maxWidth: CGFloat = 1200
 
+    private var bottomExtra: CGFloat = 0
+    private var topExtra: CGFloat = LyricBarView.bannerTotalHeight
+
     init<Content: View>(rootView: Content, width: CGFloat) {
         let visible = NSScreen.main?.visibleFrame ?? .zero
         let size = NSSize(width: OverlayWindow.clamp(width), height: OverlayWindow.height)
@@ -53,6 +56,16 @@ final class OverlayWindow: NSWindow {
     func setWidth(_ width: CGFloat) {
         var next = frame
         next.size.width = OverlayWindow.clamp(width)
+        setFrame(next, display: true)
+    }
+
+    func setLayout(topExtra: CGFloat, bottomExtra: CGFloat) {
+        let bottomDelta = bottomExtra - self.bottomExtra
+        self.topExtra = topExtra
+        self.bottomExtra = bottomExtra
+        var next = frame
+        next.size.height = OverlayWindow.barHeight + topExtra + bottomExtra
+        next.origin.y -= bottomDelta
         setFrame(next, display: true)
     }
 

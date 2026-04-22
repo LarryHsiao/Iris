@@ -7,9 +7,35 @@ struct LyricBarView: View {
     static let bannerHeight: CGFloat = 14
     static let bannerSpacing: CGFloat = 2
     static var bannerTotalHeight: CGFloat { bannerHeight + bannerSpacing }
+    static let spectrumStripHeight: CGFloat = 20
+    static let spectrumStripSpacing: CGFloat = 2
+    static var spectrumStripTotalHeight: CGFloat { spectrumStripHeight + spectrumStripSpacing }
 
     var body: some View {
-        VStack(spacing: LyricBarView.bannerSpacing) {
+        VStack(spacing: 0) {
+            topStrip
+            bar
+            if settings.showSpectrum && settings.spectrumPosition == .below {
+                SpectrumView(bands: store.spectrum, flipped: true)
+                    .frame(height: LyricBarView.spectrumStripHeight)
+                    .padding(.top, LyricBarView.spectrumStripSpacing)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var topStrip: some View {
+        if settings.showSpectrum && settings.spectrumPosition == .above {
+            ZStack(alignment: .topLeading) {
+                SpectrumView(bands: store.spectrum)
+                    .frame(height: LyricBarView.spectrumStripHeight)
+                callChip
+                    .opacity(settings.showCall && store.callInCall ? 1 : 0)
+                    .padding(.leading, 8)
+            }
+            .frame(height: LyricBarView.spectrumStripHeight)
+            .padding(.bottom, LyricBarView.spectrumStripSpacing)
+        } else {
             HStack(spacing: 0) {
                 callChip
                     .opacity(settings.showCall && store.callInCall ? 1 : 0)
@@ -17,7 +43,7 @@ struct LyricBarView: View {
             }
             .frame(height: LyricBarView.bannerHeight)
             .padding(.leading, 8)
-            bar
+            .padding(.bottom, LyricBarView.bannerSpacing)
         }
     }
 
@@ -65,8 +91,18 @@ struct LyricBarView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(Color.black.opacity(0.45))
+            ZStack {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(Color.black.opacity(0.45))
+                if settings.showSpectrum && settings.spectrumPosition == .behind {
+                    SpectrumView(bands: store.spectrum)
+                        .opacity(0.35)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 4)
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                        .allowsHitTesting(false)
+                }
+            }
         )
         .overlay(alignment: .bottom) {
             if settings.showProgress && store.isPlaying {

@@ -19,6 +19,7 @@ final class MonitorStore {
     var batteryPresent: Bool = false
     var callInCall: Bool = false
     var callAppName: String?
+    var spectrum: [Float] = Array(repeating: 0, count: AudioCapture.bandCount)
 
     func playPause() {
         SpotifyClient.playPause()
@@ -44,6 +45,9 @@ final class MonitorStore {
         s.batteryPresent = true
         s.callInCall = true
         s.callAppName = "Teams"
+        s.spectrum = (0..<AudioCapture.bandCount).map { i in
+            Float(0.3 + 0.7 * abs(sin(Double(i) * 0.4)))
+        }
         return s
     }
 }

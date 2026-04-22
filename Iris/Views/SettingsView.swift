@@ -59,6 +59,18 @@ struct SettingsView: View {
             Section("Call") {
                 Toggle("Show on-call label", isOn: $draft.showCall)
             }
+            Section("Audio") {
+                Toggle("Show spectrum visualizer", isOn: $draft.showSpectrum)
+                Picker("Position", selection: $draft.spectrumPosition) {
+                    ForEach(SpectrumPosition.allCases) { position in
+                        Text(position.label).tag(position)
+                    }
+                }
+                .disabled(!draft.showSpectrum)
+                Text("Requires Screen Recording permission; enabling this will prompt on first use.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .formStyle(.grouped)
     }
@@ -179,7 +191,13 @@ struct SettingsView: View {
     }
 
     private var previewHeight: CGFloat {
-        56 + LyricBarView.bannerTotalHeight
+        let top: CGFloat = (draft.showSpectrum && draft.spectrumPosition == .above)
+            ? LyricBarView.spectrumStripTotalHeight
+            : LyricBarView.bannerTotalHeight
+        let bottom: CGFloat = (draft.showSpectrum && draft.spectrumPosition == .below)
+            ? LyricBarView.spectrumStripTotalHeight
+            : 0
+        return 56 + top + bottom
     }
 
     private func apply() {

@@ -1,6 +1,20 @@
 import Foundation
 import Observation
 
+enum SpectrumPosition: String, CaseIterable, Identifiable, Hashable {
+    case behind, above, below
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .behind: return "Behind"
+        case .above: return "Above"
+        case .below: return "Below"
+        }
+    }
+}
+
 enum Tile: String, CaseIterable, Identifiable, Hashable {
     case network, cpu, gpu, mem, disk, battery
 
@@ -26,6 +40,8 @@ final class Settings {
     var showArtwork: Bool
     var showProgress: Bool
     var showCall: Bool
+    var showSpectrum: Bool
+    var spectrumPosition: SpectrumPosition
     var showCPU: Bool
     var showGPU: Bool
     var showMEM: Bool
@@ -47,6 +63,8 @@ final class Settings {
         showArtwork: Bool,
         showProgress: Bool,
         showCall: Bool,
+        showSpectrum: Bool,
+        spectrumPosition: SpectrumPosition,
         showCPU: Bool,
         showGPU: Bool,
         showMEM: Bool,
@@ -63,6 +81,8 @@ final class Settings {
         self.showArtwork = showArtwork
         self.showProgress = showProgress
         self.showCall = showCall
+        self.showSpectrum = showSpectrum
+        self.spectrumPosition = spectrumPosition
         self.showCPU = showCPU
         self.showGPU = showGPU
         self.showMEM = showMEM
@@ -104,6 +124,8 @@ final class Settings {
         static let showArtwork = prefix + "showArtwork"
         static let showProgress = prefix + "showProgress"
         static let showCall = prefix + "showCall"
+        static let showSpectrum = prefix + "showSpectrum"
+        static let spectrumPosition = prefix + "spectrumPosition"
         static let showCPU = prefix + "showCPU"
         static let showGPU = prefix + "showGPU"
         static let showMEM = prefix + "showMEM"
@@ -123,6 +145,8 @@ final class Settings {
             showArtwork: d.object(forKey: Key.showArtwork) as? Bool ?? true,
             showProgress: d.object(forKey: Key.showProgress) as? Bool ?? true,
             showCall: d.object(forKey: Key.showCall) as? Bool ?? true,
+            showSpectrum: d.object(forKey: Key.showSpectrum) as? Bool ?? false,
+            spectrumPosition: (d.string(forKey: Key.spectrumPosition).flatMap(SpectrumPosition.init(rawValue:))) ?? .behind,
             showCPU: d.object(forKey: Key.showCPU) as? Bool ?? true,
             showGPU: d.object(forKey: Key.showGPU) as? Bool ?? true,
             showMEM: d.object(forKey: Key.showMEM) as? Bool ?? true,
@@ -150,6 +174,8 @@ final class Settings {
         d.set(showArtwork, forKey: Key.showArtwork)
         d.set(showProgress, forKey: Key.showProgress)
         d.set(showCall, forKey: Key.showCall)
+        d.set(showSpectrum, forKey: Key.showSpectrum)
+        d.set(spectrumPosition.rawValue, forKey: Key.spectrumPosition)
         d.set(showCPU, forKey: Key.showCPU)
         d.set(showGPU, forKey: Key.showGPU)
         d.set(showMEM, forKey: Key.showMEM)
@@ -168,6 +194,8 @@ final class Settings {
             showArtwork: showArtwork,
             showProgress: showProgress,
             showCall: showCall,
+            showSpectrum: showSpectrum,
+            spectrumPosition: spectrumPosition,
             showCPU: showCPU,
             showGPU: showGPU,
             showMEM: showMEM,
@@ -187,6 +215,8 @@ final class Settings {
         showArtwork = other.showArtwork
         showProgress = other.showProgress
         showCall = other.showCall
+        showSpectrum = other.showSpectrum
+        spectrumPosition = other.spectrumPosition
         showCPU = other.showCPU
         showGPU = other.showGPU
         showMEM = other.showMEM

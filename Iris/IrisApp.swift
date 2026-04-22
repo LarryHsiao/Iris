@@ -18,6 +18,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let settings = Settings.shared
     private let cpu = CPUMonitor()
     private let net = NetworkMonitor()
+    private let audio = AudioCapture()
     private var timerCPU: Timer?
     private var timerTrack: Timer?
     private var currentTrackID: String?
@@ -42,9 +43,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self else { return }
             self.restartSystemTimer()
             self.overlay?.setWidth(self.settings.overlayWidth)
+            self.syncAudioCapture()
+            self.syncSpectrumLayout()
+        }
+
+        audio.onBands = { [weak self] bands in
+            self?.store.spectrum = bands
+        }
+        audio.onStatus = { status in
+            if case .permissionDenied = status {
+                DispatchQueue.main.async { AppDelegate.presentPermissionAlert() }
+            }
         }
 
         startTimers()
+        syncAudioCapture()
+        syncSpectrumLayout()
     }
 
     private func openSettings() {
@@ -97,6 +111,42 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func restartSystemTimer() {
         scheduleSystemTimer()
+    }
+
+    private func syncAudioCapture() {
+        if settings.showSpectrum {
+            Task { await audio.start() }
+        } else {
+            Task { await audio.stop() }
+        }
+    }
+
+    private func syncSpectrumLayout() {
+        let show = settings.showSpectrum
+        let spectrumTop = show && settings.spectrumPosition == .above
+        let top: CGFloat = spectrumTop
+            ? LyricBarView.spectrumStripTotalHeight
+            : LyricBarView.bannerTotalHeight
+        let bottom: CGFloat = (show && settings.spectrumPosition == .below)
+            ? LyricBarView.spectrumStripTotalHeight
+            : 0
+        overlay?.setLayout(topExtra: top, bottomExtra: bottom)
+    }
+
+    static func presentPermissionAlert() {
+        let alert = NSAlert()
+        alert.messageText = "Screen Recording permission needed"
+        alert.informativeText = """
+            Iris uses Screen Recording to read the system audio stream for the spectrum visualizer.
+            Grant access in System Settings → Privacy & Security → Screen Recording, then quit and reopen Iris.
+            """
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "Open Settings")
+        alert.addButton(withTitle: "Later")
+        if alert.runModal() == .alertFirstButtonReturn,
+           let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture") {
+            NSWorkspace.shared.open(url)
+        }
     }
 
     private func tickTrack() async {
