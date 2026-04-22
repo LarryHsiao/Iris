@@ -2,7 +2,7 @@
 
 All notable changes to Iris are documented here.
 
-## [1.4] — In Progress
+## [1.4] — 2026-04-22
 
 ### Added
 - Audio spectrum visualizer: system-audio capture via `ScreenCaptureKit`, 32-band vDSP FFT with per-band bass tilt and system-volume scaling, rendered as rounded bars. Three positions selectable from Settings:
