@@ -70,8 +70,40 @@ struct SettingsView: View {
                     tileRow(tile: tile, index: index)
                 }
             }
+            Section("Disks") {
+                ForEach(detectedVolumes) { volume in
+                    diskRow(volume)
+                }
+            }
         }
         .formStyle(.grouped)
+    }
+
+    private var detectedVolumes: [DiskMonitor.Volume] {
+        DiskMonitor.detectAll()
+    }
+
+    private func diskRow(_ volume: DiskMonitor.Volume) -> some View {
+        HStack {
+            Toggle(volume.name, isOn: Binding(
+                get: { volume.isSystem || draft.enabledExternalDiskIDs.contains(volume.id) },
+                set: { enabled in
+                    guard !volume.isSystem else { return }
+                    if enabled {
+                        draft.enabledExternalDiskIDs.insert(volume.id)
+                    } else {
+                        draft.enabledExternalDiskIDs.remove(volume.id)
+                    }
+                }
+            ))
+            .disabled(volume.isSystem)
+            Spacer()
+            if volume.isSystem {
+                Text("system")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
     }
 
     private var systemForm: some View {

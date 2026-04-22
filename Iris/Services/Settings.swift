@@ -36,6 +36,7 @@ final class Settings {
     var launchAtLogin: Bool
     var tileOrder: [Tile]
     var overlayWidth: Double
+    var enabledExternalDiskIDs: Set<String>
 
     var onApplied: (() -> Void)?
 
@@ -55,7 +56,8 @@ final class Settings {
         samplingInterval: Double,
         launchAtLogin: Bool,
         tileOrder: [Tile],
-        overlayWidth: Double
+        overlayWidth: Double,
+        enabledExternalDiskIDs: Set<String>
     ) {
         self.showLyrics = showLyrics
         self.showArtwork = showArtwork
@@ -71,6 +73,7 @@ final class Settings {
         self.launchAtLogin = launchAtLogin
         self.tileOrder = tileOrder
         self.overlayWidth = overlayWidth
+        self.enabledExternalDiskIDs = enabledExternalDiskIDs
     }
 
     func isVisible(_ tile: Tile) -> Bool {
@@ -110,6 +113,7 @@ final class Settings {
         static let samplingInterval = prefix + "samplingInterval"
         static let tileOrder = prefix + "tileOrder"
         static let overlayWidth = prefix + "overlayWidth"
+        static let enabledExternalDiskIDs = prefix + "enabledExternalDiskIDs"
     }
 
     static func load() -> Settings {
@@ -128,7 +132,8 @@ final class Settings {
             samplingInterval: d.object(forKey: Key.samplingInterval) as? Double ?? 2.0,
             launchAtLogin: LoginItem.isEnabled,
             tileOrder: loadTileOrder(d),
-            overlayWidth: d.object(forKey: Key.overlayWidth) as? Double ?? 384
+            overlayWidth: d.object(forKey: Key.overlayWidth) as? Double ?? 384,
+            enabledExternalDiskIDs: Set(d.stringArray(forKey: Key.enabledExternalDiskIDs) ?? [])
         )
     }
 
@@ -154,6 +159,7 @@ final class Settings {
         d.set(samplingInterval, forKey: Key.samplingInterval)
         d.set(tileOrder.map(\.rawValue), forKey: Key.tileOrder)
         d.set(overlayWidth, forKey: Key.overlayWidth)
+        d.set(Array(enabledExternalDiskIDs), forKey: Key.enabledExternalDiskIDs)
     }
 
     func copy() -> Settings {
@@ -171,7 +177,8 @@ final class Settings {
             samplingInterval: samplingInterval,
             launchAtLogin: launchAtLogin,
             tileOrder: tileOrder,
-            overlayWidth: overlayWidth
+            overlayWidth: overlayWidth,
+            enabledExternalDiskIDs: enabledExternalDiskIDs
         )
     }
 
@@ -190,6 +197,7 @@ final class Settings {
         launchAtLogin = other.launchAtLogin
         tileOrder = other.tileOrder
         overlayWidth = other.overlayWidth
+        enabledExternalDiskIDs = other.enabledExternalDiskIDs
     }
 
 }

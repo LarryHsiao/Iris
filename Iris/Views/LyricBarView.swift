@@ -147,13 +147,10 @@ struct LyricBarView: View {
     }
 
     private var diskTile: some View {
-        VStack(alignment: .trailing, spacing: 1) {
-            Text(DiskMonitor.formatted(store.diskFreeBytes))
-                .font(.system(size: 10, weight: .semibold, design: .rounded))
-                .foregroundStyle(.white)
-            Text("FREE")
-                .font(.system(size: 7, weight: .medium))
-                .foregroundStyle(.white.opacity(0.6))
+        HStack(spacing: 6) {
+            ForEach(store.disks) { volume in
+                DiskDotsGauge(volume: volume)
+            }
         }
     }
 }

@@ -74,7 +74,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self else { return }
             self.store.cpuPercent = self.cpu.sample()
             self.store.memPercent = MemoryMonitor.sample()
-            self.store.diskFreeBytes = DiskMonitor.freeBytes()
+            self.store.disks = DiskMonitor.sample(
+                enabledExternalIDs: self.settings.enabledExternalDiskIDs
+            )
             self.store.gpuPercent = GPUMonitor.sample()
             let net = self.net.sample()
             self.store.netRxBytesPerSec = net.rxBytesPerSec
