@@ -13,7 +13,9 @@ A lightweight, always-on-top HUD for macOS — live system vitals and synced son
 - **Synced lyrics** — follows Spotify's current track and streams time-synced lyrics from [lrclib.net](https://lrclib.net), scrolling in real time.
 - **Album artwork** — shows the current track's cover art alongside the lyric line.
 - **Playback progress bar** — a thin bar at the bottom of the overlay tracks position within the current track.
-- **System ring gauges** — CPU and memory usage as compact ring indicators; disk shows free space as a text label.
+- **System ring gauges** — CPU, GPU, and memory usage as compact ring indicators; network shows live up/down throughput; battery shows charge and charging state.
+- **Disk dot gauge** — free space rendered as a phyllotactic disc of dots, filled center-outward; green when healthy, yellow under 20%, red under 5%. Multiple volumes can be monitored side by side (system by default; others opt-in via Settings).
+- **On-call banner** — a compact chip above the overlay lights up when you're in a call on Teams, Zoom, Slack, Discord, Webex, FaceTime, Skype, LINE, or Google Meet. No private APIs.
 - **Draggable overlay** — float it anywhere on screen; position is saved and restored across launches.
 - **Menu-bar control** — toggle visibility or quit via the `ʟ` status item.
 
