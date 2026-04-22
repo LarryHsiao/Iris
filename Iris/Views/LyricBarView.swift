@@ -7,7 +7,7 @@ struct LyricBarView: View {
     static let bannerHeight: CGFloat = 14
     static let bannerSpacing: CGFloat = 2
     static var bannerTotalHeight: CGFloat { bannerHeight + bannerSpacing }
-    static let spectrumStripHeight: CGFloat = 20
+    static let spectrumStripHeight: CGFloat = 56 * 2 / 3
     static let spectrumStripSpacing: CGFloat = 2
     static var spectrumStripTotalHeight: CGFloat { spectrumStripHeight + spectrumStripSpacing }
 
@@ -18,6 +18,7 @@ struct LyricBarView: View {
             if settings.showSpectrum && settings.spectrumPosition == .below {
                 SpectrumView(bands: store.spectrum, flipped: true)
                     .frame(height: LyricBarView.spectrumStripHeight)
+                    .padding(.horizontal, 8)
                     .padding(.top, LyricBarView.spectrumStripSpacing)
             }
         }
@@ -29,6 +30,7 @@ struct LyricBarView: View {
             ZStack(alignment: .topLeading) {
                 SpectrumView(bands: store.spectrum)
                     .frame(height: LyricBarView.spectrumStripHeight)
+                    .padding(.horizontal, 8)
                 callChip
                     .opacity(settings.showCall && store.callInCall ? 1 : 0)
                     .padding(.leading, 8)

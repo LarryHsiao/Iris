@@ -69,10 +69,15 @@ final class SpectrumProcessor {
         let floor: Float = -70
         let ceiling: Float = -20
         let span = ceiling - floor
+        let tilt: Float = 15
+        let volume = VolumeMonitor.current()
+        let lastBand = Float(max(bandCount - 1, 1))
         for i in 0..<bandCount {
             let db = 20 * log10(max(bars[i], 1e-6))
-            let norm = max(0, min(1, (db - floor) / span))
-            smoothed[i] = max(norm, smoothed[i] * 0.75)
+            let lowShelf = tilt * (lastBand - Float(i)) / lastBand
+            let norm = max(0, min(1, (db - lowShelf - floor) / span))
+            let scaled = norm * volume
+            smoothed[i] = max(scaled, smoothed[i] * 0.75)
         }
         return smoothed
     }

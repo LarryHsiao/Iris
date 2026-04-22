@@ -14,7 +14,7 @@ struct SpectrumView: View {
             HStack(alignment: flipped ? .top : .bottom, spacing: gap) {
                 ForEach(0..<bandCount, id: \.self) { i in
                     let value = CGFloat(bands[i])
-                    RoundedRectangle(cornerRadius: barWidth / 2, style: .continuous)
+                    RoundedRectangle(cornerRadius: 1.5, style: .continuous)
                         .fill(tint)
                         .frame(width: barWidth, height: max(1, value * geo.size.height))
                 }
