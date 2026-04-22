@@ -136,7 +136,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let show = settings.showSpectrum
         let spectrumTop = show && settings.spectrumPosition == .above
         let top: CGFloat = spectrumTop
-            ? LyricBarView.spectrumStripTotalHeight
+            ? LyricBarView.spectrumStripHeight + LyricBarView.bannerSpacing
             : LyricBarView.bannerTotalHeight
         let bottom: CGFloat = (show && settings.spectrumPosition == .below)
             ? LyricBarView.spectrumStripTotalHeight

@@ -20,7 +20,14 @@ final class MonitorStore {
     var weather: WeatherSample?
     var callInCall: Bool = false
     var callAppName: String?
-    var spectrum: [Float] = Array(repeating: 0, count: AudioCapture.bandCount)
+    var spectrum: [Float] = Array(repeating: 0, count: AudioCapture.bandCount) {
+        didSet {
+            if (spectrum.max() ?? 0) > 0.01 {
+                spectrumLastActiveAt = Date()
+            }
+        }
+    }
+    var spectrumLastActiveAt: Date = .distantPast
 
     func playPause() {
         SpotifyClient.playPause()
@@ -50,6 +57,7 @@ final class MonitorStore {
         s.spectrum = (0..<AudioCapture.bandCount).map { i in
             Float(0.3 + 0.7 * abs(sin(Double(i) * 0.4)))
         }
+        s.spectrumLastActiveAt = Date()
         return s
     }
 }

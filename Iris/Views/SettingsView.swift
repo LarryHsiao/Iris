@@ -192,7 +192,7 @@ struct SettingsView: View {
 
     private var previewHeight: CGFloat {
         let top: CGFloat = (draft.showSpectrum && draft.spectrumPosition == .above)
-            ? LyricBarView.spectrumStripTotalHeight
+            ? LyricBarView.spectrumStripHeight + LyricBarView.bannerSpacing
             : LyricBarView.bannerTotalHeight
         let bottom: CGFloat = (draft.showSpectrum && draft.spectrumPosition == .below)
             ? LyricBarView.spectrumStripTotalHeight

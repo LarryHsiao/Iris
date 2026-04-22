@@ -72,24 +72,30 @@ enum CallMonitor {
             }
         }
 
+        let sleepKinds: Set<String> = [
+            "PreventUserIdleDisplaySleep",
+            "PreventUserIdleSystemSleep",
+            "PreventSystemSleep"
+        ]
+
         for (index, assertion) in assertions.enumerated() {
-            if assertion.kind == "PreventUserIdleDisplaySleep" {
-                if let label = matchCallApp(assertion.proc) {
-                    return CallState(inCall: true, appName: label)
-                }
-                let lower = assertion.name.lowercased()
-                if callKeywords.contains(where: { lower.contains($0) }) {
-                    return CallState(
-                        inCall: true,
-                        appName: matchCallApp(assertion.proc) ?? assertion.proc
-                    )
-                }
+            let lowerName = assertion.name.lowercased()
+            if callKeywords.contains(where: { lowerName.contains($0) }) {
+                let label = matchCallApp(assertion.proc) ?? assertion.proc
+                print("[CallMonitor] keyword match: \(assertion.proc) / \(assertion.kind) / \(assertion.name)")
+                return CallState(inCall: true, appName: label)
+            }
+            if sleepKinds.contains(assertion.kind),
+               let label = matchCallApp(assertion.proc) {
+                print("[CallMonitor] app+sleep match: \(assertion.proc) / \(assertion.kind) / \(assertion.name)")
+                return CallState(inCall: true, appName: label)
             }
             if assertion.proc == "coreaudiod",
                assertion.name.contains("input.context"),
                let ownerPid = createdFor[index],
-               let ownerName = processName(pid: ownerPid),
-               let label = matchCallApp(ownerName) {
+               let ownerName = processName(pid: ownerPid) {
+                let label = matchCallApp(ownerName) ?? ownerName
+                print("[CallMonitor] mic-in-use by \(ownerName) → \(label)")
                 return CallState(inCall: true, appName: label)
             }
         }

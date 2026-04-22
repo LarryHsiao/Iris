@@ -5,7 +5,7 @@ struct LyricBarView: View {
     let settings: Settings
 
     static let bannerHeight: CGFloat = 14
-    static let bannerSpacing: CGFloat = 2
+    static let bannerSpacing: CGFloat = 4
     static var bannerTotalHeight: CGFloat { bannerHeight + bannerSpacing }
     static let spectrumStripHeight: CGFloat = 56 * 2 / 3
     static let spectrumStripSpacing: CGFloat = 2
@@ -13,39 +13,33 @@ struct LyricBarView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            topStrip
+            if settings.showSpectrum && settings.spectrumPosition == .above {
+                ZStack(alignment: .bottomLeading) {
+                    SpectrumView(bands: store.spectrum, lastActive: store.spectrumLastActiveAt)
+                        .frame(height: LyricBarView.spectrumStripHeight)
+                        .padding(.horizontal, 8)
+                    callChip
+                        .opacity(settings.showCall && store.callInCall ? 1 : 0)
+                        .padding(.leading, 8)
+                }
+                .padding(.bottom, LyricBarView.bannerSpacing)
+            } else {
+                HStack(spacing: 0) {
+                    callChip
+                        .opacity(settings.showCall && store.callInCall ? 1 : 0)
+                    Spacer(minLength: 0)
+                }
+                .frame(height: LyricBarView.bannerHeight)
+                .padding(.leading, 8)
+                .padding(.bottom, LyricBarView.bannerSpacing)
+            }
             bar
             if settings.showSpectrum && settings.spectrumPosition == .below {
-                SpectrumView(bands: store.spectrum, flipped: true)
+                SpectrumView(bands: store.spectrum, flipped: true, lastActive: store.spectrumLastActiveAt)
                     .frame(height: LyricBarView.spectrumStripHeight)
                     .padding(.horizontal, 8)
                     .padding(.top, LyricBarView.spectrumStripSpacing)
             }
-        }
-    }
-
-    @ViewBuilder
-    private var topStrip: some View {
-        if settings.showSpectrum && settings.spectrumPosition == .above {
-            ZStack(alignment: .topLeading) {
-                SpectrumView(bands: store.spectrum)
-                    .frame(height: LyricBarView.spectrumStripHeight)
-                    .padding(.horizontal, 8)
-                callChip
-                    .opacity(settings.showCall && store.callInCall ? 1 : 0)
-                    .padding(.leading, 8)
-            }
-            .frame(height: LyricBarView.spectrumStripHeight)
-            .padding(.bottom, LyricBarView.spectrumStripSpacing)
-        } else {
-            HStack(spacing: 0) {
-                callChip
-                    .opacity(settings.showCall && store.callInCall ? 1 : 0)
-                Spacer(minLength: 0)
-            }
-            .frame(height: LyricBarView.bannerHeight)
-            .padding(.leading, 8)
-            .padding(.bottom, LyricBarView.bannerSpacing)
         }
     }
 
@@ -97,7 +91,7 @@ struct LyricBarView: View {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .fill(Color.black.opacity(0.45))
                 if settings.showSpectrum && settings.spectrumPosition == .behind {
-                    SpectrumView(bands: store.spectrum)
+                    SpectrumView(bands: store.spectrum, lastActive: store.spectrumLastActiveAt)
                         .opacity(0.35)
                         .padding(.horizontal, 4)
                         .padding(.vertical, 4)
