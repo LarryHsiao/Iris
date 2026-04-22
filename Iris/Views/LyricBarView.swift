@@ -46,7 +46,7 @@ struct LyricBarView: View {
     private var bar: some View {
         HStack(spacing: 16) {
             HStack(spacing: 6) {
-                if settings.showArtwork && store.hasTrack {
+                if settings.showArtwork {
                     Button(action: { store.playPause() }) {
                         AsyncImage(url: store.artworkURL) { phase in
                             switch phase {
@@ -66,9 +66,9 @@ struct LyricBarView: View {
                     .buttonStyle(.plain)
                 }
                 if settings.showLyrics {
-                    Text(store.currentLine)
+                    Text(store.hasTrack ? store.currentLine : "Standing by")
                         .font(.system(size: 13, weight: .medium, design: .rounded))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(store.hasTrack ? .white : .white.opacity(0.55))
                         .lineLimit(2)
                         .truncationMode(.tail)
                         .multilineTextAlignment(.leading)
