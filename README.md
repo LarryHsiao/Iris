@@ -6,7 +6,7 @@ A lightweight, always-on-top HUD for macOS — live system vitals and synced son
 
 > Status: **work in progress.**
 
-![Iris overlay showing lyrics and system ring gauges](docs/screenshot.png)
+![Iris overlay with an audio spectrum strip, on-call chip, lyrics, ring gauges, disk dot discs, and weather tile](docs/screenshot.png)
 
 ## Features
 
@@ -15,9 +15,11 @@ A lightweight, always-on-top HUD for macOS — live system vitals and synced son
 - **Playback progress bar** — a thin bar at the bottom of the overlay tracks position within the current track.
 - **System ring gauges** — CPU, GPU, and memory usage as compact ring indicators; network shows live up/down throughput; battery shows charge and charging state.
 - **Disk dot gauge** — free space rendered as a phyllotactic disc of dots, filled center-outward; green when healthy, yellow under 20%, red under 5%. Multiple volumes can be monitored side by side (system by default; others opt-in via Settings).
-- **On-call banner** — a compact chip above the overlay lights up when you're in a call on Teams, Zoom, Slack, Discord, Webex, FaceTime, Skype, LINE, or Google Meet. No private APIs.
+- **Weather tile** — current condition icon plus temperature, fetched from Open-Meteo with IP-based geolocation (no permission, no API key).
+- **Audio spectrum visualizer** — live FFT of the system audio output, rendered as bars that can sit above, below, or behind the lyric bar. Volume-scaled and fades out when playback is silent. First use prompts for Screen Recording access.
+- **On-call banner** — a compact chip lights up when you're in a call on Teams, Zoom, Slack, Discord, Webex, FaceTime, Skype, LINE, or Google Meet. No private APIs.
 - **Draggable overlay** — float it anywhere on screen; position is saved and restored across launches.
-- **Menu-bar control** — toggle visibility or quit via the `ʟ` status item.
+- **Menu-bar control** — toggle visibility or open Settings via the `ʟ` status item.
 
 ## Planned
 
