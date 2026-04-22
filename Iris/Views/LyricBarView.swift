@@ -149,7 +149,7 @@ struct LyricBarView: View {
     private var diskTile: some View {
         HStack(spacing: 6) {
             ForEach(store.disks) { volume in
-                DiskDotsGauge(volume: volume)
+                DiskDotsGauge(volume: volume, showLabel: store.disks.count > 1)
             }
         }
     }

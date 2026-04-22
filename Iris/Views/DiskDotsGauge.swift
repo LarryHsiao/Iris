@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DiskDotsGauge: View {
     let volume: DiskMonitor.Volume
+    let showLabel: Bool
 
     static let dotSize: CGFloat = 1
     static let gridSize: CGFloat = 22
@@ -46,12 +47,13 @@ struct DiskDotsGauge: View {
                 }
             }
             .frame(width: Self.gridSize, height: Self.gridSize)
-            Text(volume.name)
+            Image(systemName: volume.isSystem
+                  ? "internaldrive.fill"
+                  : "externaldrive.fill")
                 .font(.system(size: 7, weight: .medium))
                 .foregroundStyle(.white.opacity(0.6))
-                .lineLimit(1)
-                .truncationMode(.middle)
-                .frame(maxWidth: 40)
+                .opacity(showLabel ? 1 : 0)
         }
+        .help(volume.name)
     }
 }
