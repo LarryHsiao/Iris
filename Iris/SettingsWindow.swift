@@ -12,7 +12,7 @@ final class SettingsWindow: NSObject, NSWindowDelegate {
         onResetPosition: @escaping () -> Void
     ) {
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 520, height: 560),
+            contentRect: NSRect(x: 0, y: 0, width: 520, height: 420),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
@@ -25,7 +25,9 @@ final class SettingsWindow: NSObject, NSWindowDelegate {
             live: settings,
             demoStore: demoStore,
             onResetPosition: onResetPosition,
-            onClose: { [weak window] in window?.close() },
+            onClose: { [weak window] in
+                DispatchQueue.main.async { window?.close() }
+            },
             onApplyError: { error in errorClosure?(error) }
         )
         let hosting = NSHostingController(rootView: view)

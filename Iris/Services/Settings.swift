@@ -192,20 +192,4 @@ final class Settings {
         overlayWidth = other.overlayWidth
     }
 
-    func equals(_ other: Settings) -> Bool {
-        showLyrics == other.showLyrics
-        && showArtwork == other.showArtwork
-        && showProgress == other.showProgress
-        && showCall == other.showCall
-        && showCPU == other.showCPU
-        && showGPU == other.showGPU
-        && showMEM == other.showMEM
-        && showNetwork == other.showNetwork
-        && showDisk == other.showDisk
-        && showBattery == other.showBattery
-        && samplingInterval == other.samplingInterval
-        && launchAtLogin == other.launchAtLogin
-        && tileOrder == other.tileOrder
-        && overlayWidth == other.overlayWidth
-    }
 }

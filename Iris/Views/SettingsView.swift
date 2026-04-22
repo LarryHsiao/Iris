@@ -28,59 +28,81 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 14) {
             preview
             Divider()
-            Form {
-                Section("Left") {
-                    Toggle("Lyrics", isOn: $draft.showLyrics)
-                    Toggle("Album artwork", isOn: $draft.showArtwork)
-                    Toggle("Progress bar", isOn: $draft.showProgress)
-                }
-                Section("Call") {
-                    Toggle("Show on-call label", isOn: $draft.showCall)
-                }
-                Section("Tiles") {
-                    ForEach(Array(draft.tileOrder.enumerated()), id: \.element) { index, tile in
-                        tileRow(tile: tile, index: index)
-                    }
-                }
-                Section("Sampling") {
-                    HStack {
-                        Slider(value: $draft.samplingInterval, in: 1.0...10.0, step: 0.5)
-                        Text(String(format: "%.1fs", draft.samplingInterval))
-                            .font(.system(.body, design: .monospaced))
-                            .frame(width: 48, alignment: .trailing)
-                    }
-                }
-                Section("Overlay") {
-                    HStack {
-                        Text("Width")
-                        Slider(value: $draft.overlayWidth, in: 320...1200, step: 10)
-                        Text(String(format: "%.0f", draft.overlayWidth))
-                            .font(.system(.body, design: .monospaced))
-                            .frame(width: 48, alignment: .trailing)
-                    }
-                    HStack {
-                        Text("Position")
-                        Spacer()
-                        Button("Reset to Default", action: onResetPosition)
-                    }
-                }
-                Section("System") {
-                    Toggle("Launch at login", isOn: $draft.launchAtLogin)
-                }
+            TabView {
+                contentForm
+                    .tabItem { Label("Content", systemImage: "text.alignleft") }
+                tilesForm
+                    .tabItem { Label("Tiles", systemImage: "square.grid.2x2") }
+                systemForm
+                    .tabItem { Label("System", systemImage: "gearshape") }
             }
-            .formStyle(.grouped)
-            .frame(minHeight: 520)
+            .frame(minHeight: 260)
             HStack {
                 Spacer()
                 Button("Cancel", role: .cancel) { onClose() }
                     .keyboardShortcut(.cancelAction)
                 Button("Apply", action: apply)
                     .keyboardShortcut(.defaultAction)
-                    .disabled(!isDirty)
             }
         }
         .padding(16)
         .frame(width: 520)
+    }
+
+    private var contentForm: some View {
+        Form {
+            Section("Left") {
+                Toggle("Lyrics", isOn: $draft.showLyrics)
+                Toggle("Album artwork", isOn: $draft.showArtwork)
+                Toggle("Progress bar", isOn: $draft.showProgress)
+            }
+            Section("Call") {
+                Toggle("Show on-call label", isOn: $draft.showCall)
+            }
+        }
+        .formStyle(.grouped)
+    }
+
+    private var tilesForm: some View {
+        Form {
+            Section("Tiles") {
+                ForEach(Array(draft.tileOrder.enumerated()), id: \.element) { index, tile in
+                    tileRow(tile: tile, index: index)
+                }
+            }
+        }
+        .formStyle(.grouped)
+    }
+
+    private var systemForm: some View {
+        Form {
+            Section("Sampling") {
+                HStack {
+                    Slider(value: $draft.samplingInterval, in: 1.0...10.0, step: 0.5)
+                    Text(String(format: "%.1fs", draft.samplingInterval))
+                        .font(.system(.body, design: .monospaced))
+                        .frame(width: 48, alignment: .trailing)
+                }
+            }
+            Section("Overlay") {
+                HStack {
+                    Text("Width")
+                    Slider(value: $draft.overlayWidth, in: 320...1200, step: 10)
+                    Text(String(format: "%.0f", draft.overlayWidth))
+                        .font(.system(.body, design: .monospaced))
+                        .frame(width: 48, alignment: .trailing)
+                }
+                HStack {
+                    Text("Position")
+                    Spacer()
+                    Button("Reset to Default", action: onResetPosition)
+                }
+            }
+            Section("System") {
+                Toggle("Launch at login", isOn: $draft.launchAtLogin)
+            }
+        }
+        .formStyle(.grouped)
     }
 
     private func tileRow(tile: Tile, index: Int) -> some View {
@@ -128,8 +150,6 @@ struct SettingsView: View {
         56 + LyricBarView.bannerTotalHeight
     }
 
-    private var isDirty: Bool { !live.equals(draft) }
-
     private func apply() {
         let loginChanged = draft.launchAtLogin != live.launchAtLogin
         if loginChanged {
@@ -144,5 +164,6 @@ struct SettingsView: View {
         live.apply(from: draft)
         live.save()
         live.onApplied?()
+        onClose()
     }
 }
