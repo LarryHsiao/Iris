@@ -11,7 +11,8 @@ private final class DraggableHostingView<Content: View>: NSHostingView<Content> 
 
 final class OverlayWindow: NSWindow {
     private static let positionKey = "OverlayWindow.origin"
-    private static let height: CGFloat = 56
+    private static let barHeight: CGFloat = 56
+    private static var height: CGFloat { barHeight + LyricBarView.bannerTotalHeight }
     static let minWidth: CGFloat = 320
     static let maxWidth: CGFloat = 1200
 

@@ -25,6 +25,7 @@ final class Settings {
     var showLyrics: Bool
     var showArtwork: Bool
     var showProgress: Bool
+    var showCall: Bool
     var showCPU: Bool
     var showGPU: Bool
     var showMEM: Bool
@@ -44,6 +45,7 @@ final class Settings {
         showLyrics: Bool,
         showArtwork: Bool,
         showProgress: Bool,
+        showCall: Bool,
         showCPU: Bool,
         showGPU: Bool,
         showMEM: Bool,
@@ -58,6 +60,7 @@ final class Settings {
         self.showLyrics = showLyrics
         self.showArtwork = showArtwork
         self.showProgress = showProgress
+        self.showCall = showCall
         self.showCPU = showCPU
         self.showGPU = showGPU
         self.showMEM = showMEM
@@ -97,6 +100,7 @@ final class Settings {
         static let showLyrics = prefix + "showLyrics"
         static let showArtwork = prefix + "showArtwork"
         static let showProgress = prefix + "showProgress"
+        static let showCall = prefix + "showCall"
         static let showCPU = prefix + "showCPU"
         static let showGPU = prefix + "showGPU"
         static let showMEM = prefix + "showMEM"
@@ -114,6 +118,7 @@ final class Settings {
             showLyrics: d.object(forKey: Key.showLyrics) as? Bool ?? true,
             showArtwork: d.object(forKey: Key.showArtwork) as? Bool ?? true,
             showProgress: d.object(forKey: Key.showProgress) as? Bool ?? true,
+            showCall: d.object(forKey: Key.showCall) as? Bool ?? true,
             showCPU: d.object(forKey: Key.showCPU) as? Bool ?? true,
             showGPU: d.object(forKey: Key.showGPU) as? Bool ?? true,
             showMEM: d.object(forKey: Key.showMEM) as? Bool ?? true,
@@ -139,6 +144,7 @@ final class Settings {
         d.set(showLyrics, forKey: Key.showLyrics)
         d.set(showArtwork, forKey: Key.showArtwork)
         d.set(showProgress, forKey: Key.showProgress)
+        d.set(showCall, forKey: Key.showCall)
         d.set(showCPU, forKey: Key.showCPU)
         d.set(showGPU, forKey: Key.showGPU)
         d.set(showMEM, forKey: Key.showMEM)
@@ -155,6 +161,7 @@ final class Settings {
             showLyrics: showLyrics,
             showArtwork: showArtwork,
             showProgress: showProgress,
+            showCall: showCall,
             showCPU: showCPU,
             showGPU: showGPU,
             showMEM: showMEM,
@@ -172,6 +179,7 @@ final class Settings {
         showLyrics = other.showLyrics
         showArtwork = other.showArtwork
         showProgress = other.showProgress
+        showCall = other.showCall
         showCPU = other.showCPU
         showGPU = other.showGPU
         showMEM = other.showMEM
@@ -188,6 +196,7 @@ final class Settings {
         showLyrics == other.showLyrics
         && showArtwork == other.showArtwork
         && showProgress == other.showProgress
+        && showCall == other.showCall
         && showCPU == other.showCPU
         && showGPU == other.showGPU
         && showMEM == other.showMEM

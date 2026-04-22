@@ -17,6 +17,8 @@ final class MonitorStore {
     var batteryPercent: Double = 0
     var batteryCharging: Bool = false
     var batteryPresent: Bool = false
+    var callInCall: Bool = false
+    var callAppName: String?
 
     func playPause() {
         SpotifyClient.playPause()
@@ -37,6 +39,8 @@ final class MonitorStore {
         s.batteryPercent = 78
         s.batteryCharging = true
         s.batteryPresent = true
+        s.callInCall = true
+        s.callAppName = "Teams"
         return s
     }
 }

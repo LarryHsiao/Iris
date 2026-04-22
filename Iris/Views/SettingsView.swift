@@ -34,6 +34,9 @@ struct SettingsView: View {
                     Toggle("Album artwork", isOn: $draft.showArtwork)
                     Toggle("Progress bar", isOn: $draft.showProgress)
                 }
+                Section("Call") {
+                    Toggle("Show on-call label", isOn: $draft.showCall)
+                }
                 Section("Tiles") {
                     ForEach(Array(draft.tileOrder.enumerated()), id: \.element) { index, tile in
                         tileRow(tile: tile, index: index)
@@ -116,9 +119,13 @@ struct SettingsView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             LyricBarView(store: demoStore, settings: draft)
-                .frame(width: min(draft.overlayWidth, 488), height: 56)
+                .frame(width: min(draft.overlayWidth, 488), height: previewHeight)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+
+    private var previewHeight: CGFloat {
+        56 + LyricBarView.bannerTotalHeight
     }
 
     private var isDirty: Bool { !live.equals(draft) }

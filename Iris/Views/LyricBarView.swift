@@ -4,7 +4,24 @@ struct LyricBarView: View {
     let store: MonitorStore
     let settings: Settings
 
+    static let bannerHeight: CGFloat = 14
+    static let bannerSpacing: CGFloat = 2
+    static var bannerTotalHeight: CGFloat { bannerHeight + bannerSpacing }
+
     var body: some View {
+        VStack(spacing: LyricBarView.bannerSpacing) {
+            HStack(spacing: 0) {
+                callChip
+                    .opacity(settings.showCall && store.callInCall ? 1 : 0)
+                Spacer(minLength: 0)
+            }
+            .frame(height: LyricBarView.bannerHeight)
+            .padding(.leading, 8)
+            bar
+        }
+    }
+
+    private var bar: some View {
         HStack(spacing: 16) {
             HStack(spacing: 6) {
                 if settings.showArtwork && store.hasTrack {
@@ -90,6 +107,22 @@ struct LyricBarView: View {
             BatteryTile(percent: store.batteryPercent, charging: store.batteryCharging)
         }
         }
+    }
+
+    private var callChip: some View {
+        HStack(spacing: 3) {
+            Image(systemName: "phone.fill")
+                .font(.system(size: 7, weight: .bold))
+            Text(store.callAppName ?? "On call")
+                .font(.system(size: 9, weight: .semibold, design: .rounded))
+                .lineLimit(1)
+        }
+        .foregroundStyle(.white)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 2)
+        .background(
+            Capsule().fill(Color(red: 0.93, green: 0.25, blue: 0.32).opacity(0.9))
+        )
     }
 
     private var networkTile: some View {
