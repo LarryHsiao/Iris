@@ -10,6 +10,7 @@ All notable changes to Iris are documented here.
   - **Above** — strip above the bar at 2/3 the bar height; the on-call chip floats on top of it.
   - **Below** — matching strip under the bar with bars hanging upside-down.
 - Permission flow: first enable triggers `CGRequestScreenCaptureAccess` and a follow-up alert linking to *System Settings → Privacy & Security → Screen Recording*.
+- Weather tile: icon + current temperature gauge on the right, fetched from Open-Meteo every 15 minutes. Location resolved via IP geolocation (no permission, no API key).
 
 ## [1.3] — 2026-04-22
 

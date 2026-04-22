@@ -144,6 +144,7 @@ struct LyricBarView: View {
         case .battery: if store.batteryPresent {
             BatteryTile(percent: store.batteryPercent, charging: store.batteryCharging)
         }
+        case .weather: WeatherTile(sample: store.weather)
         }
     }
 

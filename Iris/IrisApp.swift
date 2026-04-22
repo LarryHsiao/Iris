@@ -19,8 +19,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let cpu = CPUMonitor()
     private let net = NetworkMonitor()
     private let audio = AudioCapture()
+    private let weather = WeatherMonitor()
     private var timerCPU: Timer?
     private var timerTrack: Timer?
+    private var timerWeather: Timer?
     private var currentTrackID: String?
     private var lyrics: SyncedLyrics?
 
@@ -77,6 +79,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         timerTrack = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             Task { @MainActor in await self?.tickTrack() }
         }
+        Task { @MainActor in await self.tickWeather() }
+        timerWeather = Timer.scheduledTimer(withTimeInterval: 900, repeats: true) { [weak self] _ in
+            Task { @MainActor in await self?.tickWeather() }
+        }
+    }
+
+    private func tickWeather() async {
+        let sample = await weather.sample()
+        store.weather = sample
     }
 
     private func scheduleSystemTimer() {

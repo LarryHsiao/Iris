@@ -16,7 +16,7 @@ enum SpectrumPosition: String, CaseIterable, Identifiable, Hashable {
 }
 
 enum Tile: String, CaseIterable, Identifiable, Hashable {
-    case network, cpu, gpu, mem, disk, battery
+    case network, cpu, gpu, mem, disk, battery, weather
 
     var id: String { rawValue }
 
@@ -28,10 +28,11 @@ enum Tile: String, CaseIterable, Identifiable, Hashable {
         case .mem: return "Memory"
         case .disk: return "Disk"
         case .battery: return "Battery"
+        case .weather: return "Weather"
         }
     }
 
-    static let defaultOrder: [Tile] = [.network, .cpu, .gpu, .mem, .disk, .battery]
+    static let defaultOrder: [Tile] = [.network, .cpu, .gpu, .mem, .disk, .battery, .weather]
 }
 
 @Observable
@@ -48,6 +49,7 @@ final class Settings {
     var showNetwork: Bool
     var showDisk: Bool
     var showBattery: Bool
+    var showWeather: Bool
     var samplingInterval: Double
     var launchAtLogin: Bool
     var tileOrder: [Tile]
@@ -71,6 +73,7 @@ final class Settings {
         showNetwork: Bool,
         showDisk: Bool,
         showBattery: Bool,
+        showWeather: Bool,
         samplingInterval: Double,
         launchAtLogin: Bool,
         tileOrder: [Tile],
@@ -89,6 +92,7 @@ final class Settings {
         self.showNetwork = showNetwork
         self.showDisk = showDisk
         self.showBattery = showBattery
+        self.showWeather = showWeather
         self.samplingInterval = samplingInterval
         self.launchAtLogin = launchAtLogin
         self.tileOrder = tileOrder
@@ -104,6 +108,7 @@ final class Settings {
         case .mem: return showMEM
         case .disk: return showDisk
         case .battery: return showBattery
+        case .weather: return showWeather
         }
     }
 
@@ -115,6 +120,7 @@ final class Settings {
         case .mem: showMEM = value
         case .disk: showDisk = value
         case .battery: showBattery = value
+        case .weather: showWeather = value
         }
     }
 
@@ -132,6 +138,7 @@ final class Settings {
         static let showNetwork = prefix + "showNetwork"
         static let showDisk = prefix + "showDisk"
         static let showBattery = prefix + "showBattery"
+        static let showWeather = prefix + "showWeather"
         static let samplingInterval = prefix + "samplingInterval"
         static let tileOrder = prefix + "tileOrder"
         static let overlayWidth = prefix + "overlayWidth"
@@ -153,6 +160,7 @@ final class Settings {
             showNetwork: d.object(forKey: Key.showNetwork) as? Bool ?? true,
             showDisk: d.object(forKey: Key.showDisk) as? Bool ?? true,
             showBattery: d.object(forKey: Key.showBattery) as? Bool ?? true,
+            showWeather: d.object(forKey: Key.showWeather) as? Bool ?? true,
             samplingInterval: d.object(forKey: Key.samplingInterval) as? Double ?? 2.0,
             launchAtLogin: LoginItem.isEnabled,
             tileOrder: loadTileOrder(d),
@@ -182,6 +190,7 @@ final class Settings {
         d.set(showNetwork, forKey: Key.showNetwork)
         d.set(showDisk, forKey: Key.showDisk)
         d.set(showBattery, forKey: Key.showBattery)
+        d.set(showWeather, forKey: Key.showWeather)
         d.set(samplingInterval, forKey: Key.samplingInterval)
         d.set(tileOrder.map(\.rawValue), forKey: Key.tileOrder)
         d.set(overlayWidth, forKey: Key.overlayWidth)
@@ -202,6 +211,7 @@ final class Settings {
             showNetwork: showNetwork,
             showDisk: showDisk,
             showBattery: showBattery,
+            showWeather: showWeather,
             samplingInterval: samplingInterval,
             launchAtLogin: launchAtLogin,
             tileOrder: tileOrder,
@@ -223,6 +233,7 @@ final class Settings {
         showNetwork = other.showNetwork
         showDisk = other.showDisk
         showBattery = other.showBattery
+        showWeather = other.showWeather
         samplingInterval = other.samplingInterval
         launchAtLogin = other.launchAtLogin
         tileOrder = other.tileOrder
