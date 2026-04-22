@@ -2,6 +2,15 @@
 
 All notable changes to Iris are documented here.
 
+## [1.4] — In Progress
+
+### Added
+- Audio spectrum visualizer: system-audio capture via `ScreenCaptureKit`, 32-band vDSP FFT with per-band bass tilt and system-volume scaling, rendered as rounded bars. Three positions selectable from Settings:
+  - **Behind** — faint backdrop inside the lyric bar.
+  - **Above** — strip above the bar at 2/3 the bar height; the on-call chip floats on top of it.
+  - **Below** — matching strip under the bar with bars hanging upside-down.
+- Permission flow: first enable triggers `CGRequestScreenCaptureAccess` and a follow-up alert linking to *System Settings → Privacy & Security → Screen Recording*.
+
 ## [1.3] — 2026-04-22
 
 ### Added
