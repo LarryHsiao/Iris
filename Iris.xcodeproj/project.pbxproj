@@ -403,7 +403,6 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "Iris reads your upcoming calendar events to surface the next meeting in the overlay.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSLocationUsageDescription = "Iris uses your location solely to read the current Wi-Fi network name for the expanded network tile.";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -437,7 +436,6 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "Iris reads your upcoming calendar events to surface the next meeting in the overlay.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSLocationUsageDescription = "Iris uses your location solely to read the current Wi-Fi network name for the expanded network tile.";
 				LD_RUNPATH_SEARCH_PATHS = (

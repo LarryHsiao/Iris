@@ -36,9 +36,6 @@ final class MonitorStore {
 
     let focus = FocusTimer()
 
-    var calendarEvent: CalendarEventSample?
-    var now: Date = Date()
-
     var cpuHistory: [Double] = []
     var gpuHistory: [Double] = []
     var memHistory: [Double] = []

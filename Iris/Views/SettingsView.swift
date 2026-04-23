@@ -59,21 +59,6 @@ struct SettingsView: View {
             Section("Call") {
                 Toggle("Show on-call label", isOn: $draft.showCall)
             }
-            Section("Calendar") {
-                Toggle("Show upcoming calendar event", isOn: $draft.showCalendar)
-                if draft.showCalendar {
-                    HStack {
-                        Text("Imminent banner at")
-                        Slider(value: $draft.calendarImminentMinutes, in: 1...30, step: 1)
-                        Text("\(Int(draft.calendarImminentMinutes)) min")
-                            .font(.system(.body, design: .monospaced))
-                            .frame(width: 64, alignment: .trailing)
-                    }
-                    Text("Needs Calendar access (prompted on enable). Events shown: next event within the upcoming hour.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
             Section("Audio") {
                 Toggle("Show spectrum visualizer", isOn: $draft.showSpectrum)
                 Picker("Position", selection: $draft.spectrumPosition) {
