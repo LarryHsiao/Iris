@@ -34,6 +34,8 @@ final class MonitorStore {
     var wifiSSID: String?
     var publicIP: String?
 
+    let focus = FocusTimer()
+
     var cpuHistory: [Double] = []
     var gpuHistory: [Double] = []
     var memHistory: [Double] = []

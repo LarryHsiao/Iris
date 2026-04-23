@@ -8,6 +8,7 @@ All notable changes to Iris are documented here.
 - Sparkline expansion: tap a CPU, GPU, MEM, or Network tile to replace the lyric line with a recent-history sparkline (last 60 samples) and current value. Re-tap or wait 5s to collapse.
 - Auto-hide overlay when a fullscreen app is frontmost: fades out smoothly and returns when you exit fullscreen. Toggle in Settings → System. Window stays alive so audio capture and polling keep running.
 - Wi-Fi name and public IP in the expanded network tile. Opt-in toggle in Settings → System (default off). SSID comes from CoreWLAN and requires Location permission on macOS 14.4+; public IP is fetched from `api.ipify.org` and refreshed on network changes plus every 10 minutes.
+- Focus (Pomodoro) tile. Tap to start/pause; right-click for Reset, Skip phase, and Start/Pause/Resume. Phase ring fills in red during focus and green during break. Focus/break durations and phase-change notifications configurable in Settings → Tiles → Focus. Tile is hidden by default — enable it in Settings → Tiles.
 
 ## [1.4] — 2026-04-22
 

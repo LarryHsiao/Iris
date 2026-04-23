@@ -51,6 +51,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.syncSpectrumLayout()
             self.applyOverlayVisibility()
             self.syncWiFiInfo()
+            self.syncFocusSettings()
         }
 
         fullscreen.onChange = { [weak self] _ in
@@ -63,6 +64,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.store.publicIP = ip
         }
         syncWiFiInfo()
+        syncFocusSettings()
 
         audio.onBands = { [weak self] bands in
             self?.store.spectrum = bands
@@ -154,6 +156,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             wifi.stop()
         }
+    }
+
+    private func syncFocusSettings() {
+        store.focus.applyDurations(
+            focus: settings.focusMinutes * 60,
+            rest: settings.restMinutes * 60
+        )
+        store.focus.notificationsEnabled = settings.focusNotifications
     }
 
     private func applyOverlayVisibility() {

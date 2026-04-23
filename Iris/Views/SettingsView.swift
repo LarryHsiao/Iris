@@ -87,6 +87,23 @@ struct SettingsView: View {
                     diskRow(volume)
                 }
             }
+            Section("Focus") {
+                HStack {
+                    Text("Focus")
+                    Slider(value: $draft.focusMinutes, in: 5...90, step: 1)
+                    Text("\(Int(draft.focusMinutes)) min")
+                        .font(.system(.body, design: .monospaced))
+                        .frame(width: 64, alignment: .trailing)
+                }
+                HStack {
+                    Text("Break")
+                    Slider(value: $draft.restMinutes, in: 1...30, step: 1)
+                    Text("\(Int(draft.restMinutes)) min")
+                        .font(.system(.body, design: .monospaced))
+                        .frame(width: 64, alignment: .trailing)
+                }
+                Toggle("Notify on phase change", isOn: $draft.focusNotifications)
+            }
         }
         .formStyle(.grouped)
     }

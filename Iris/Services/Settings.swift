@@ -16,7 +16,7 @@ enum SpectrumPosition: String, CaseIterable, Identifiable, Hashable {
 }
 
 enum Tile: String, CaseIterable, Identifiable, Hashable {
-    case network, cpu, gpu, mem, disk, battery, weather
+    case network, cpu, gpu, mem, disk, battery, weather, focus
 
     var id: String { rawValue }
 
@@ -29,10 +29,11 @@ enum Tile: String, CaseIterable, Identifiable, Hashable {
         case .disk: return "Disk"
         case .battery: return "Battery"
         case .weather: return "Weather"
+        case .focus: return "Focus"
         }
     }
 
-    static let defaultOrder: [Tile] = [.network, .cpu, .gpu, .mem, .disk, .battery, .weather]
+    static let defaultOrder: [Tile] = [.network, .cpu, .gpu, .mem, .disk, .battery, .weather, .focus]
 }
 
 @Observable
@@ -57,6 +58,10 @@ final class Settings {
     var enabledExternalDiskIDs: Set<String>
     var autoHideOnFullscreen: Bool
     var showWiFiInfo: Bool
+    var showFocus: Bool
+    var focusMinutes: Double
+    var restMinutes: Double
+    var focusNotifications: Bool
 
     var onApplied: (() -> Void)?
 
@@ -82,7 +87,11 @@ final class Settings {
         overlayWidth: Double,
         enabledExternalDiskIDs: Set<String>,
         autoHideOnFullscreen: Bool,
-        showWiFiInfo: Bool
+        showWiFiInfo: Bool,
+        showFocus: Bool,
+        focusMinutes: Double,
+        restMinutes: Double,
+        focusNotifications: Bool
     ) {
         self.showLyrics = showLyrics
         self.showArtwork = showArtwork
@@ -104,6 +113,10 @@ final class Settings {
         self.enabledExternalDiskIDs = enabledExternalDiskIDs
         self.autoHideOnFullscreen = autoHideOnFullscreen
         self.showWiFiInfo = showWiFiInfo
+        self.showFocus = showFocus
+        self.focusMinutes = focusMinutes
+        self.restMinutes = restMinutes
+        self.focusNotifications = focusNotifications
     }
 
     func isVisible(_ tile: Tile) -> Bool {
@@ -115,6 +128,7 @@ final class Settings {
         case .disk: return showDisk
         case .battery: return showBattery
         case .weather: return showWeather
+        case .focus: return showFocus
         }
     }
 
@@ -127,6 +141,7 @@ final class Settings {
         case .disk: showDisk = value
         case .battery: showBattery = value
         case .weather: showWeather = value
+        case .focus: showFocus = value
         }
     }
 
@@ -151,6 +166,10 @@ final class Settings {
         static let enabledExternalDiskIDs = prefix + "enabledExternalDiskIDs"
         static let autoHideOnFullscreen = prefix + "autoHideOnFullscreen"
         static let showWiFiInfo = prefix + "showWiFiInfo"
+        static let showFocus = prefix + "showFocus"
+        static let focusMinutes = prefix + "focusMinutes"
+        static let restMinutes = prefix + "restMinutes"
+        static let focusNotifications = prefix + "focusNotifications"
     }
 
     static func load() -> Settings {
@@ -175,7 +194,11 @@ final class Settings {
             overlayWidth: d.object(forKey: Key.overlayWidth) as? Double ?? 384,
             enabledExternalDiskIDs: Set(d.stringArray(forKey: Key.enabledExternalDiskIDs) ?? []),
             autoHideOnFullscreen: d.object(forKey: Key.autoHideOnFullscreen) as? Bool ?? true,
-            showWiFiInfo: d.object(forKey: Key.showWiFiInfo) as? Bool ?? false
+            showWiFiInfo: d.object(forKey: Key.showWiFiInfo) as? Bool ?? false,
+            showFocus: d.object(forKey: Key.showFocus) as? Bool ?? false,
+            focusMinutes: d.object(forKey: Key.focusMinutes) as? Double ?? 25,
+            restMinutes: d.object(forKey: Key.restMinutes) as? Double ?? 5,
+            focusNotifications: d.object(forKey: Key.focusNotifications) as? Bool ?? true
         )
     }
 
@@ -207,6 +230,10 @@ final class Settings {
         d.set(Array(enabledExternalDiskIDs), forKey: Key.enabledExternalDiskIDs)
         d.set(autoHideOnFullscreen, forKey: Key.autoHideOnFullscreen)
         d.set(showWiFiInfo, forKey: Key.showWiFiInfo)
+        d.set(showFocus, forKey: Key.showFocus)
+        d.set(focusMinutes, forKey: Key.focusMinutes)
+        d.set(restMinutes, forKey: Key.restMinutes)
+        d.set(focusNotifications, forKey: Key.focusNotifications)
     }
 
     func copy() -> Settings {
@@ -230,7 +257,11 @@ final class Settings {
             overlayWidth: overlayWidth,
             enabledExternalDiskIDs: enabledExternalDiskIDs,
             autoHideOnFullscreen: autoHideOnFullscreen,
-            showWiFiInfo: showWiFiInfo
+            showWiFiInfo: showWiFiInfo,
+            showFocus: showFocus,
+            focusMinutes: focusMinutes,
+            restMinutes: restMinutes,
+            focusNotifications: focusNotifications
         )
     }
 
@@ -255,6 +286,10 @@ final class Settings {
         enabledExternalDiskIDs = other.enabledExternalDiskIDs
         autoHideOnFullscreen = other.autoHideOnFullscreen
         showWiFiInfo = other.showWiFiInfo
+        showFocus = other.showFocus
+        focusMinutes = other.focusMinutes
+        restMinutes = other.restMinutes
+        focusNotifications = other.focusNotifications
     }
 
 }

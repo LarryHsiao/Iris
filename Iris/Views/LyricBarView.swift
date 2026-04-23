@@ -205,6 +205,7 @@ struct LyricBarView: View {
             BatteryTile(percent: store.batteryPercent, charging: store.batteryCharging)
         }
         case .weather: WeatherTile(sample: store.weather)
+        case .focus: FocusTile(timer: store.focus)
         }
     }
 
@@ -255,7 +256,7 @@ struct LyricBarView: View {
     private static func sparklineSupported(_ tile: Tile) -> Bool {
         switch tile {
         case .cpu, .gpu, .mem, .network: return true
-        case .disk, .battery, .weather: return false
+        case .disk, .battery, .weather, .focus: return false
         }
     }
 
