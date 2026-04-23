@@ -190,6 +190,7 @@ struct SettingsView: View {
 
     private func tileRow(tile: Tile, index: Int) -> some View {
         HStack {
+            TilePreview(tile: tile, store: demoStore)
             Toggle(tile.label, isOn: Binding(
                 get: { draft.isVisible(tile) },
                 set: { draft.setVisible(tile, $0) }
@@ -253,5 +254,84 @@ struct SettingsView: View {
         live.apply(from: draft)
         live.save()
         live.onApplied?()
+    }
+}
+
+private struct TilePreview: View {
+    let tile: Tile
+    let store: MonitorStore
+
+    var body: some View {
+        content
+            .frame(width: 46, height: 36, alignment: .center)
+            .background(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(Color.black.opacity(0.45))
+            )
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch tile {
+        case .cpu:
+            RingGauge(
+                percent: store.cpuPercent,
+                label: "CPU",
+                tint: Color(red: 0.38, green: 0.78, blue: 1.0)
+            )
+        case .gpu:
+            RingGauge(
+                percent: store.gpuPercent,
+                label: "GPU",
+                tint: Color(red: 0.75, green: 0.55, blue: 1.0)
+            )
+        case .mem:
+            RingGauge(
+                percent: store.memPercent,
+                label: "MEM",
+                tint: Color(red: 1.0, green: 0.72, blue: 0.30)
+            )
+        case .network:
+            networkSample
+        case .disk:
+            if let volume = store.disks.first {
+                DiskDotsGauge(volume: volume, showLabel: false)
+            }
+        case .battery:
+            BatteryTile(percent: store.batteryPercent, charging: store.batteryCharging)
+        case .weather:
+            WeatherTile(sample: store.weather)
+        case .focus:
+            FocusTile(timer: store.focus)
+        case .calendar:
+            if let event = store.calendarEvent {
+                CalendarTile(event: event, now: Date())
+            } else {
+                Image(systemName: "calendar")
+                    .font(.system(size: 14))
+                    .foregroundStyle(.white.opacity(0.6))
+            }
+        }
+    }
+
+    private var networkSample: some View {
+        VStack(alignment: .trailing, spacing: 1) {
+            HStack(spacing: 2) {
+                Image(systemName: "arrow.down")
+                    .font(.system(size: 7, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.6))
+                Text("1.2M")
+                    .font(.system(size: 9, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white)
+            }
+            HStack(spacing: 2) {
+                Image(systemName: "arrow.up")
+                    .font(.system(size: 7, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.6))
+                Text("180K")
+                    .font(.system(size: 9, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white)
+            }
+        }
     }
 }
