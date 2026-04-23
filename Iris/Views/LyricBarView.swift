@@ -19,7 +19,8 @@ struct LyricBarView: View {
                         .frame(height: LyricBarView.spectrumStripHeight)
                         .padding(.horizontal, 8)
                     bannerChips
-                        .padding(.leading, 8)
+                        .padding(.leading, 12)
+                        .padding(.bottom, 4)
                 }
                 .padding(.bottom, LyricBarView.bannerSpacing)
             } else {
