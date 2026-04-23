@@ -39,7 +39,7 @@ struct FocusTile: View {
     }
 
     private var phaseLabel: String {
-        timer.phase == .focus ? "FOCUS" : "BREAK"
+        timer.phase == .focus ? "FOC" : "BRK"
     }
 
     private var toggleLabel: String {
