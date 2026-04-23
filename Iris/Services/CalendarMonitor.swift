@@ -31,7 +31,10 @@ final class CalendarMonitor {
         default:
             break
         }
+        let priorPolicy = NSApp.activationPolicy()
+        NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
+        defer { NSApp.setActivationPolicy(priorPolicy) }
         do {
             let granted = try await store.requestFullAccessToEvents()
             let after = EKEventStore.authorizationStatus(for: .event)
