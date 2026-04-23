@@ -56,6 +56,7 @@ final class Settings {
     var overlayWidth: Double
     var enabledExternalDiskIDs: Set<String>
     var autoHideOnFullscreen: Bool
+    var showWiFiInfo: Bool
 
     var onApplied: (() -> Void)?
 
@@ -80,7 +81,8 @@ final class Settings {
         tileOrder: [Tile],
         overlayWidth: Double,
         enabledExternalDiskIDs: Set<String>,
-        autoHideOnFullscreen: Bool
+        autoHideOnFullscreen: Bool,
+        showWiFiInfo: Bool
     ) {
         self.showLyrics = showLyrics
         self.showArtwork = showArtwork
@@ -101,6 +103,7 @@ final class Settings {
         self.overlayWidth = overlayWidth
         self.enabledExternalDiskIDs = enabledExternalDiskIDs
         self.autoHideOnFullscreen = autoHideOnFullscreen
+        self.showWiFiInfo = showWiFiInfo
     }
 
     func isVisible(_ tile: Tile) -> Bool {
@@ -147,6 +150,7 @@ final class Settings {
         static let overlayWidth = prefix + "overlayWidth"
         static let enabledExternalDiskIDs = prefix + "enabledExternalDiskIDs"
         static let autoHideOnFullscreen = prefix + "autoHideOnFullscreen"
+        static let showWiFiInfo = prefix + "showWiFiInfo"
     }
 
     static func load() -> Settings {
@@ -170,7 +174,8 @@ final class Settings {
             tileOrder: loadTileOrder(d),
             overlayWidth: d.object(forKey: Key.overlayWidth) as? Double ?? 384,
             enabledExternalDiskIDs: Set(d.stringArray(forKey: Key.enabledExternalDiskIDs) ?? []),
-            autoHideOnFullscreen: d.object(forKey: Key.autoHideOnFullscreen) as? Bool ?? true
+            autoHideOnFullscreen: d.object(forKey: Key.autoHideOnFullscreen) as? Bool ?? true,
+            showWiFiInfo: d.object(forKey: Key.showWiFiInfo) as? Bool ?? false
         )
     }
 
@@ -201,6 +206,7 @@ final class Settings {
         d.set(overlayWidth, forKey: Key.overlayWidth)
         d.set(Array(enabledExternalDiskIDs), forKey: Key.enabledExternalDiskIDs)
         d.set(autoHideOnFullscreen, forKey: Key.autoHideOnFullscreen)
+        d.set(showWiFiInfo, forKey: Key.showWiFiInfo)
     }
 
     func copy() -> Settings {
@@ -223,7 +229,8 @@ final class Settings {
             tileOrder: tileOrder,
             overlayWidth: overlayWidth,
             enabledExternalDiskIDs: enabledExternalDiskIDs,
-            autoHideOnFullscreen: autoHideOnFullscreen
+            autoHideOnFullscreen: autoHideOnFullscreen,
+            showWiFiInfo: showWiFiInfo
         )
     }
 
@@ -247,6 +254,7 @@ final class Settings {
         overlayWidth = other.overlayWidth
         enabledExternalDiskIDs = other.enabledExternalDiskIDs
         autoHideOnFullscreen = other.autoHideOnFullscreen
+        showWiFiInfo = other.showWiFiInfo
     }
 
 }

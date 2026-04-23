@@ -135,15 +135,37 @@ struct LyricBarView: View {
     @ViewBuilder
     private func expandedSparklineRow(tile: Tile) -> some View {
         HStack(spacing: 8) {
-            Text(expandedLabel(for: tile))
-                .font(.system(size: 11, weight: .semibold, design: .rounded))
-                .foregroundStyle(.white.opacity(0.9))
-                .lineLimit(1)
+            expandedLabelView(for: tile)
                 .fixedSize(horizontal: true, vertical: false)
             sparklineView(for: tile)
                 .frame(height: 24)
                 .frame(maxWidth: .infinity)
         }
+    }
+
+    @ViewBuilder
+    private func expandedLabelView(for tile: Tile) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(expandedLabel(for: tile))
+                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                .foregroundStyle(.white.opacity(0.9))
+                .lineLimit(1)
+            if tile == .network, settings.showWiFiInfo, let sub = wifiInfoLine {
+                Text(sub)
+                    .font(.system(size: 9, weight: .regular, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.6))
+                    .lineLimit(1)
+            }
+        }
+    }
+
+    private var wifiInfoLine: String? {
+        let ssid = store.wifiSSID
+        let ip = store.publicIP
+        if ssid == nil && ip == nil { return nil }
+        let ssidPart = ssid ?? "—"
+        let ipPart = ip ?? "…"
+        return "\(ssidPart) · \(ipPart)"
     }
 
     private func expandedLabel(for tile: Tile) -> String {

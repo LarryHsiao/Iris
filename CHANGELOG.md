@@ -7,6 +7,7 @@ All notable changes to Iris are documented here.
 ### Added
 - Sparkline expansion: tap a CPU, GPU, MEM, or Network tile to replace the lyric line with a recent-history sparkline (last 60 samples) and current value. Re-tap or wait 5s to collapse.
 - Auto-hide overlay when a fullscreen app is frontmost: fades out smoothly and returns when you exit fullscreen. Toggle in Settings → System. Window stays alive so audio capture and polling keep running.
+- Wi-Fi name and public IP in the expanded network tile. Opt-in toggle in Settings → System (default off). SSID comes from CoreWLAN and requires Location permission on macOS 14.4+; public IP is fetched from `api.ipify.org` and refreshed on network changes plus every 10 minutes.
 
 ## [1.4] — 2026-04-22
 

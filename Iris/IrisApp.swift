@@ -21,6 +21,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let audio = AudioCapture()
     private let weather = WeatherMonitor()
     private let fullscreen = FullscreenMonitor()
+    private let wifi = WiFiInfoMonitor()
     private var timerCPU: Timer?
     private var timerTrack: Timer?
     private var timerWeather: Timer?
@@ -49,12 +50,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.syncAudioCapture()
             self.syncSpectrumLayout()
             self.applyOverlayVisibility()
+            self.syncWiFiInfo()
         }
 
         fullscreen.onChange = { [weak self] _ in
             self?.applyOverlayVisibility()
         }
         fullscreen.start()
+
+        wifi.onUpdate = { [weak self] ssid, ip in
+            self?.store.wifiSSID = ssid
+            self?.store.publicIP = ip
+        }
+        syncWiFiInfo()
 
         audio.onBands = { [weak self] bands in
             self?.store.spectrum = bands
@@ -137,6 +145,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Task { await audio.start() }
         } else {
             Task { await audio.stop() }
+        }
+    }
+
+    private func syncWiFiInfo() {
+        if settings.showWiFiInfo {
+            wifi.start()
+        } else {
+            wifi.stop()
         }
     }
 

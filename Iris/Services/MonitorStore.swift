@@ -31,6 +31,9 @@ final class MonitorStore {
     }
     var spectrumLastActiveAt: Date = .distantPast
 
+    var wifiSSID: String?
+    var publicIP: String?
+
     var cpuHistory: [Double] = []
     var gpuHistory: [Double] = []
     var memHistory: [Double] = []

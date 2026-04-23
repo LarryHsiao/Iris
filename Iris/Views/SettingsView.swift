@@ -145,6 +145,12 @@ struct SettingsView: View {
             Section("System") {
                 Toggle("Launch at login", isOn: $draft.launchAtLogin)
                 Toggle("Auto-hide when a fullscreen app is frontmost", isOn: $draft.autoHideOnFullscreen)
+                Toggle("Show Wi-Fi name and public IP in expanded network", isOn: $draft.showWiFiInfo)
+                if draft.showWiFiInfo {
+                    Text("Wi-Fi SSID requires Location permission. Public IP is fetched from api.ipify.org.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
         .formStyle(.grouped)
