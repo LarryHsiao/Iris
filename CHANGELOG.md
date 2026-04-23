@@ -2,6 +2,11 @@
 
 All notable changes to Iris are documented here.
 
+## [Unreleased]
+
+### Added
+- Sparkline expansion: tap a CPU, GPU, MEM, or Network tile to replace the lyric line with a recent-history sparkline (last 60 samples) and current value. Re-tap or wait 5s to collapse.
+
 ## [1.4] — 2026-04-22
 
 ### Added

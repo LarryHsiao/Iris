@@ -65,7 +65,10 @@ struct LyricBarView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                if settings.showLyrics {
+                if let expanded = store.expandedTile,
+                   LyricBarView.sparklineSupported(expanded) {
+                    expandedSparklineRow(tile: expanded)
+                } else if settings.showLyrics {
                     Text(store.hasTrack ? store.currentLine : "Standing by")
                         .font(.system(size: 13, weight: .medium, design: .rounded))
                         .foregroundStyle(store.hasTrack ? .white : .white.opacity(0.55))
@@ -75,6 +78,7 @@ struct LyricBarView: View {
                 }
             }
             .padding(.leading, 8)
+            .animation(.easeInOut(duration: 0.18), value: store.expandedTile)
             Spacer(minLength: 12)
             HStack(spacing: 8) {
                 ForEach(settings.tileOrder) { tile in
@@ -117,6 +121,46 @@ struct LyricBarView: View {
 
     @ViewBuilder
     private func tileView(for tile: Tile) -> some View {
+        if LyricBarView.sparklineSupported(tile) {
+            Button(action: { toggleExpansion(for: tile) }) {
+                baseTile(for: tile)
+                    .opacity(store.expandedTile == tile ? 0.55 : 1)
+            }
+            .buttonStyle(.plain)
+        } else {
+            baseTile(for: tile)
+        }
+    }
+
+    @ViewBuilder
+    private func expandedSparklineRow(tile: Tile) -> some View {
+        HStack(spacing: 8) {
+            Text(expandedLabel(for: tile))
+                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                .foregroundStyle(.white.opacity(0.9))
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
+            sparklineView(for: tile)
+                .frame(height: 24)
+                .frame(maxWidth: .infinity)
+        }
+    }
+
+    private func expandedLabel(for tile: Tile) -> String {
+        switch tile {
+        case .cpu: return "CPU \(Int(store.cpuPercent.rounded()))%"
+        case .gpu: return "GPU \(Int(store.gpuPercent.rounded()))%"
+        case .mem: return "MEM \(Int(store.memPercent.rounded()))%"
+        case .network:
+            let rx = NetworkMonitor.format(bytesPerSec: store.netRxBytesPerSec)
+            let tx = NetworkMonitor.format(bytesPerSec: store.netTxBytesPerSec)
+            return "NET ↓\(rx) ↑\(tx)"
+        default: return ""
+        }
+    }
+
+    @ViewBuilder
+    private func baseTile(for tile: Tile) -> some View {
         switch tile {
         case .network: networkTile
         case .cpu: RingGauge(
@@ -139,6 +183,71 @@ struct LyricBarView: View {
             BatteryTile(percent: store.batteryPercent, charging: store.batteryCharging)
         }
         case .weather: WeatherTile(sample: store.weather)
+        }
+    }
+
+    @ViewBuilder
+    private func sparklineView(for tile: Tile) -> some View {
+        switch tile {
+        case .cpu:
+            Sparkline(
+                samples: store.cpuHistory,
+                tint: Color(red: 0.38, green: 0.78, blue: 1.0),
+                maxValue: 100
+            )
+        case .gpu:
+            Sparkline(
+                samples: store.gpuHistory,
+                tint: Color(red: 0.75, green: 0.55, blue: 1.0),
+                maxValue: 100
+            )
+        case .mem:
+            Sparkline(
+                samples: store.memHistory,
+                tint: Color(red: 1.0, green: 0.72, blue: 0.30),
+                maxValue: 100
+            )
+        case .network:
+            networkSparkline
+        default:
+            EmptyView()
+        }
+    }
+
+    private var networkSparkline: some View {
+        let upper = max(store.netRxHistory.max() ?? 0, store.netTxHistory.max() ?? 0, 1)
+        return ZStack {
+            Sparkline(
+                samples: store.netRxHistory,
+                tint: Color(red: 0.38, green: 0.78, blue: 1.0),
+                maxValue: upper
+            )
+            Sparkline(
+                samples: store.netTxHistory,
+                tint: Color(red: 1.0, green: 0.55, blue: 0.55),
+                maxValue: upper
+            )
+        }
+    }
+
+    private static func sparklineSupported(_ tile: Tile) -> Bool {
+        switch tile {
+        case .cpu, .gpu, .mem, .network: return true
+        case .disk, .battery, .weather: return false
+        }
+    }
+
+    private func toggleExpansion(for tile: Tile) {
+        if store.expandedTile == tile {
+            store.expandedTile = nil
+        } else {
+            store.expandedTile = tile
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 5_000_000_000)
+                if store.expandedTile == tile {
+                    store.expandedTile = nil
+                }
+            }
         }
     }
 

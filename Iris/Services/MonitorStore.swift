@@ -3,6 +3,8 @@ import Observation
 
 @Observable
 final class MonitorStore {
+    static let historyCapacity = 60
+
     var currentLine: String = "—"
     var cpuPercent: Double = 0
     var hasTrack: Bool = false
@@ -28,6 +30,29 @@ final class MonitorStore {
         }
     }
     var spectrumLastActiveAt: Date = .distantPast
+
+    var cpuHistory: [Double] = []
+    var gpuHistory: [Double] = []
+    var memHistory: [Double] = []
+    var netRxHistory: [Double] = []
+    var netTxHistory: [Double] = []
+
+    var expandedTile: Tile?
+
+    func recordSystemSample() {
+        Self.push(&cpuHistory, cpuPercent)
+        Self.push(&gpuHistory, gpuPercent)
+        Self.push(&memHistory, memPercent)
+        Self.push(&netRxHistory, netRxBytesPerSec)
+        Self.push(&netTxHistory, netTxBytesPerSec)
+    }
+
+    private static func push(_ buf: inout [Double], _ value: Double) {
+        buf.append(value)
+        if buf.count > historyCapacity {
+            buf.removeFirst(buf.count - historyCapacity)
+        }
+    }
 
     func playPause() {
         SpotifyClient.playPause()

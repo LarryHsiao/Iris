@@ -110,6 +110,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.store.batteryPercent = battery.percent
             self.store.batteryCharging = battery.isCharging
             self.store.batteryPresent = battery.isPresent
+            self.store.recordSystemSample()
             Task.detached(priority: .utility) {
                 let call = CallMonitor.sample()
                 await MainActor.run {
