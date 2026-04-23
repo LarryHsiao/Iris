@@ -252,7 +252,7 @@ struct SettingsView: View {
         }
         live.apply(from: draft)
         live.save()
-        live.onApplied?()
         onClose()
+        live.onApplied?()
     }
 }
