@@ -13,33 +13,69 @@ struct LyricBarView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if settings.showSpectrum && settings.spectrumPosition == .above {
-                ZStack(alignment: .bottomLeading) {
-                    SpectrumView(bands: store.spectrum, lastActive: store.spectrumLastActiveAt)
+            topSection
+            bar
+            bottomSection
+        }
+    }
+
+    @ViewBuilder
+    private var topSection: some View {
+        if settings.showSpectrum && settings.spectrumPosition == .above {
+            TimelineView(.periodic(from: .now, by: 0.2)) { context in
+                topSpectrumStrip(active: spectrumActive(at: context.date))
+            }
+        } else {
+            plainBannerStrip
+        }
+    }
+
+    @ViewBuilder
+    private func topSpectrumStrip(active: Bool) -> some View {
+        ZStack(alignment: .bottomLeading) {
+            if active {
+                SpectrumView(bands: store.spectrum, lastActive: store.spectrumLastActiveAt)
+                    .padding(.horizontal, 8)
+            }
+            bannerChips
+                .padding(.leading, active ? 12 : 8)
+                .padding(.bottom, active ? 4 : 0)
+        }
+        .frame(height: LyricBarView.spectrumStripHeight)
+        .padding(.bottom, LyricBarView.bannerSpacing)
+    }
+
+    @ViewBuilder
+    private var plainBannerStrip: some View {
+        HStack(spacing: 0) {
+            bannerChips
+            Spacer(minLength: 0)
+        }
+        .frame(height: LyricBarView.bannerHeight)
+        .padding(.leading, 8)
+        .padding(.bottom, LyricBarView.bannerSpacing)
+    }
+
+    @ViewBuilder
+    private var bottomSection: some View {
+        if settings.showSpectrum && settings.spectrumPosition == .below {
+            TimelineView(.periodic(from: .now, by: 0.2)) { context in
+                if spectrumActive(at: context.date) {
+                    SpectrumView(bands: store.spectrum, flipped: true, lastActive: store.spectrumLastActiveAt)
                         .frame(height: LyricBarView.spectrumStripHeight)
                         .padding(.horizontal, 8)
-                    bannerChips
-                        .padding(.leading, 12)
-                        .padding(.bottom, 4)
+                        .padding(.top, LyricBarView.spectrumStripSpacing)
+                } else {
+                    Color.clear
+                        .frame(height: LyricBarView.spectrumStripTotalHeight)
                 }
-                .padding(.bottom, LyricBarView.bannerSpacing)
-            } else {
-                HStack(spacing: 0) {
-                    bannerChips
-                    Spacer(minLength: 0)
-                }
-                .frame(height: LyricBarView.bannerHeight)
-                .padding(.leading, 8)
-                .padding(.bottom, LyricBarView.bannerSpacing)
-            }
-            bar
-            if settings.showSpectrum && settings.spectrumPosition == .below {
-                SpectrumView(bands: store.spectrum, flipped: true, lastActive: store.spectrumLastActiveAt)
-                    .frame(height: LyricBarView.spectrumStripHeight)
-                    .padding(.horizontal, 8)
-                    .padding(.top, LyricBarView.spectrumStripSpacing)
             }
         }
+    }
+
+    private func spectrumActive(at date: Date) -> Bool {
+        let idle = date.timeIntervalSince(store.spectrumLastActiveAt)
+        return idle <= SpectrumView.idleThreshold + SpectrumView.fadeDuration
     }
 
     private var bar: some View {
