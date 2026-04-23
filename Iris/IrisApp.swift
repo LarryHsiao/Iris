@@ -22,6 +22,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let weather = WeatherMonitor()
     private let fullscreen = FullscreenMonitor()
     private let wifi = WiFiInfoMonitor()
+    private let calendar = CalendarMonitor()
+    private var calendarTimer: Timer?
     private var timerCPU: Timer?
     private var timerTrack: Timer?
     private var timerWeather: Timer?
@@ -52,6 +54,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.applyOverlayVisibility()
             self.syncWiFiInfo()
             self.syncFocusSettings()
+            self.syncCalendar()
         }
 
         fullscreen.onChange = { [weak self] _ in
@@ -65,6 +68,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         syncWiFiInfo()
         syncFocusSettings()
+        syncCalendar()
 
         audio.onBands = { [weak self] bands in
             self?.store.spectrum = bands
@@ -156,6 +160,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             wifi.stop()
         }
+    }
+
+    private func syncCalendar() {
+        calendarTimer?.invalidate()
+        calendarTimer = nil
+        guard settings.showCalendar else {
+            store.calendarEvent = nil
+            return
+        }
+        Task { @MainActor in
+            await calendar.requestAccessIfNeeded()
+            tickCalendar()
+        }
+        calendarTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
+            Task { @MainActor in self?.tickCalendar() }
+        }
+    }
+
+    private func tickCalendar() {
+        store.now = Date()
+        store.calendarEvent = calendar.nextEvent()
     }
 
     private func syncFocusSettings() {
