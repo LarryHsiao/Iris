@@ -322,16 +322,9 @@ struct LyricBarView: View {
             BatteryTile(percent: store.batteryPercent, charging: store.batteryCharging)
         }
         case .weather: WeatherTile(sample: store.weather)
-        case .focus:
-            if !focusHiddenByMeeting {
-                FocusTile(timer: store.focus)
-            }
+        case .focus: FocusTile(timer: store.focus)
         case .calendar: EmptyView()
         }
-    }
-
-    private var focusHiddenByMeeting: Bool {
-        settings.showCalendar && (store.calendarEvent?.isOngoing ?? false)
     }
 
     @ViewBuilder
