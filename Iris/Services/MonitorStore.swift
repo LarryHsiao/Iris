@@ -76,8 +76,14 @@ final class MonitorStore {
         s.gpuPercent = 22
         s.memPercent = 61
         s.disks = [
-            DiskMonitor.Volume(id: "sys", name: "Macintosh HD", freePercent: 62, isSystem: true),
-            DiskMonitor.Volume(id: "ext", name: "External SSD", freePercent: 18, isSystem: false)
+            DiskMonitor.Volume(
+                id: "sys", name: "Macintosh HD", freePercent: 62,
+                freeBytes: 620_000_000_000, totalBytes: 1_000_000_000_000, isSystem: true
+            ),
+            DiskMonitor.Volume(
+                id: "ext", name: "External SSD", freePercent: 18,
+                freeBytes: 180_000_000_000, totalBytes: 1_000_000_000_000, isSystem: false
+            )
         ]
         s.netRxBytesPerSec = 1_250_000
         s.netTxBytesPerSec = 180_000

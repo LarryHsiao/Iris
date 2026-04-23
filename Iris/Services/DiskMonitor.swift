@@ -6,6 +6,8 @@ enum DiskMonitor {
         let id: String
         let name: String
         let freePercent: Double
+        let freeBytes: Int64
+        let totalBytes: Int64
         let isSystem: Bool
     }
 
@@ -41,6 +43,8 @@ enum DiskMonitor {
                 id: id,
                 name: name,
                 freePercent: max(0, min(100, percent)),
+                freeBytes: Int64(freeBytes),
+                totalBytes: Int64(total),
                 isSystem: isSystem
             ))
         }

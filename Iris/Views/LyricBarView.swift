@@ -218,10 +218,30 @@ struct LyricBarView: View {
             if let event = store.calendarEvent {
                 calendarExpandedRow(event: event)
             }
+        case .disk:
+            diskExpandedRow
         default:
             expandedSparklineRow(tile: tile)
         }
     }
+
+    private var diskExpandedRow: some View {
+        VStack(alignment: .leading, spacing: 1) {
+            ForEach(store.disks) { volume in
+                Text("\(volume.name) · \(Self.byteFormatter.string(fromByteCount: volume.freeBytes)) free of \(Self.byteFormatter.string(fromByteCount: volume.totalBytes))")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.9))
+                    .lineLimit(1)
+            }
+        }
+    }
+
+    private static let byteFormatter: ByteCountFormatter = {
+        let f = ByteCountFormatter()
+        f.countStyle = .file
+        f.allowedUnits = [.useGB, .useTB, .useMB]
+        return f
+    }()
 
     private func calendarExpandedRow(event: CalendarEventSample) -> some View {
         VStack(alignment: .leading, spacing: 1) {
@@ -373,8 +393,8 @@ struct LyricBarView: View {
 
     private static func expandable(_ tile: Tile) -> Bool {
         switch tile {
-        case .cpu, .gpu, .mem, .network, .calendar: return true
-        case .disk, .battery, .weather, .focus: return false
+        case .cpu, .gpu, .mem, .network, .calendar, .disk: return true
+        case .battery, .weather, .focus: return false
         }
     }
 
