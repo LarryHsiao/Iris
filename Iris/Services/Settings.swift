@@ -16,7 +16,7 @@ enum SpectrumPosition: String, CaseIterable, Identifiable, Hashable {
 }
 
 enum Tile: String, CaseIterable, Identifiable, Hashable {
-    case network, cpu, gpu, mem, disk, battery, weather, focus
+    case network, cpu, gpu, mem, disk, battery, weather, focus, calendar
 
     var id: String { rawValue }
 
@@ -30,10 +30,11 @@ enum Tile: String, CaseIterable, Identifiable, Hashable {
         case .battery: return "Battery"
         case .weather: return "Weather"
         case .focus: return "Focus"
+        case .calendar: return "Calendar"
         }
     }
 
-    static let defaultOrder: [Tile] = [.network, .cpu, .gpu, .mem, .disk, .battery, .weather, .focus]
+    static let defaultOrder: [Tile] = [.network, .cpu, .gpu, .mem, .disk, .battery, .weather, .focus, .calendar]
 }
 
 @Observable
@@ -62,6 +63,8 @@ final class Settings {
     var focusMinutes: Double
     var restMinutes: Double
     var focusNotifications: Bool
+    var showCalendar: Bool
+    var calendarImminentMinutes: Double
 
     var onApplied: (() -> Void)?
 
@@ -91,7 +94,9 @@ final class Settings {
         showFocus: Bool,
         focusMinutes: Double,
         restMinutes: Double,
-        focusNotifications: Bool
+        focusNotifications: Bool,
+        showCalendar: Bool,
+        calendarImminentMinutes: Double
     ) {
         self.showLyrics = showLyrics
         self.showArtwork = showArtwork
@@ -117,6 +122,8 @@ final class Settings {
         self.focusMinutes = focusMinutes
         self.restMinutes = restMinutes
         self.focusNotifications = focusNotifications
+        self.showCalendar = showCalendar
+        self.calendarImminentMinutes = calendarImminentMinutes
     }
 
     func isVisible(_ tile: Tile) -> Bool {
@@ -129,6 +136,7 @@ final class Settings {
         case .battery: return showBattery
         case .weather: return showWeather
         case .focus: return showFocus
+        case .calendar: return showCalendar
         }
     }
 
@@ -142,6 +150,7 @@ final class Settings {
         case .battery: showBattery = value
         case .weather: showWeather = value
         case .focus: showFocus = value
+        case .calendar: showCalendar = value
         }
     }
 
@@ -170,6 +179,8 @@ final class Settings {
         static let focusMinutes = prefix + "focusMinutes"
         static let restMinutes = prefix + "restMinutes"
         static let focusNotifications = prefix + "focusNotifications"
+        static let showCalendar = prefix + "showCalendar"
+        static let calendarImminentMinutes = prefix + "calendarImminentMinutes"
     }
 
     static func load() -> Settings {
@@ -198,7 +209,9 @@ final class Settings {
             showFocus: d.object(forKey: Key.showFocus) as? Bool ?? false,
             focusMinutes: d.object(forKey: Key.focusMinutes) as? Double ?? 25,
             restMinutes: d.object(forKey: Key.restMinutes) as? Double ?? 5,
-            focusNotifications: d.object(forKey: Key.focusNotifications) as? Bool ?? true
+            focusNotifications: d.object(forKey: Key.focusNotifications) as? Bool ?? true,
+            showCalendar: d.object(forKey: Key.showCalendar) as? Bool ?? false,
+            calendarImminentMinutes: d.object(forKey: Key.calendarImminentMinutes) as? Double ?? 5
         )
     }
 
@@ -234,6 +247,8 @@ final class Settings {
         d.set(focusMinutes, forKey: Key.focusMinutes)
         d.set(restMinutes, forKey: Key.restMinutes)
         d.set(focusNotifications, forKey: Key.focusNotifications)
+        d.set(showCalendar, forKey: Key.showCalendar)
+        d.set(calendarImminentMinutes, forKey: Key.calendarImminentMinutes)
     }
 
     func copy() -> Settings {
@@ -261,7 +276,9 @@ final class Settings {
             showFocus: showFocus,
             focusMinutes: focusMinutes,
             restMinutes: restMinutes,
-            focusNotifications: focusNotifications
+            focusNotifications: focusNotifications,
+            showCalendar: showCalendar,
+            calendarImminentMinutes: calendarImminentMinutes
         )
     }
 
@@ -290,6 +307,8 @@ final class Settings {
         focusMinutes = other.focusMinutes
         restMinutes = other.restMinutes
         focusNotifications = other.focusNotifications
+        showCalendar = other.showCalendar
+        calendarImminentMinutes = other.calendarImminentMinutes
     }
 
 }

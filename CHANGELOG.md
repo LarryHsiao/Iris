@@ -9,6 +9,7 @@ All notable changes to Iris are documented here.
 - Auto-hide overlay when a fullscreen app is frontmost: fades out smoothly and returns when you exit fullscreen. Toggle in Settings → System. Window stays alive so audio capture and polling keep running.
 - Wi-Fi name and public IP in the expanded network tile. Opt-in toggle in Settings → System (default off). SSID comes from CoreWLAN and requires Location permission on macOS 14.4+; public IP is fetched from `api.ipify.org` and refreshed on network changes plus every 10 minutes.
 - Focus (Pomodoro) tile. Tap to start/pause; right-click for Reset, Skip phase, and Start/Pause/Resume. Phase ring fills in red during focus and green during break. Focus/break durations and phase-change notifications configurable in Settings → Tiles → Focus. Tile is hidden by default — enable it in Settings → Tiles.
+- Calendar event surface. When idle with no track playing, the artwork/lyrics slot becomes an IdleView showing the next meeting (title + relative time) or the current clock. While music is playing, a ring-gauge Calendar tile shows the countdown; tap it to swap the lyric line for the event title, relative time, and start–end range. When the next event is within a configurable threshold (default 5 min), an amber chip floats above the bar. Opt-in toggle in Settings → Content → Calendar; uses EventKit full access. `NSCalendarsFullAccessUsageDescription` added to the generated Info.plist.
 
 ## [1.4] — 2026-04-22
 

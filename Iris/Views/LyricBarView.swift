@@ -18,15 +18,13 @@ struct LyricBarView: View {
                     SpectrumView(bands: store.spectrum, lastActive: store.spectrumLastActiveAt)
                         .frame(height: LyricBarView.spectrumStripHeight)
                         .padding(.horizontal, 8)
-                    callChip
-                        .opacity(settings.showCall && store.callInCall ? 1 : 0)
+                    bannerChips
                         .padding(.leading, 8)
                 }
                 .padding(.bottom, LyricBarView.bannerSpacing)
             } else {
                 HStack(spacing: 0) {
-                    callChip
-                        .opacity(settings.showCall && store.callInCall ? 1 : 0)
+                    bannerChips
                     Spacer(minLength: 0)
                 }
                 .frame(height: LyricBarView.bannerHeight)
@@ -45,40 +43,9 @@ struct LyricBarView: View {
 
     private var bar: some View {
         HStack(spacing: 16) {
-            HStack(spacing: 6) {
-                if settings.showArtwork {
-                    Button(action: { store.playPause() }) {
-                        AsyncImage(url: store.artworkURL) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image.resizable().scaledToFill()
-                            default:
-                                Image(systemName: "music.note")
-                                    .font(.system(size: 10, weight: .semibold))
-                                    .foregroundStyle(.white.opacity(0.7))
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .background(Color.white.opacity(0.1))
-                            }
-                        }
-                        .frame(width: 36, height: 36)
-                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
-                    }
-                    .buttonStyle(.plain)
-                }
-                if let expanded = store.expandedTile,
-                   LyricBarView.sparklineSupported(expanded) {
-                    expandedSparklineRow(tile: expanded)
-                } else if settings.showLyrics {
-                    Text(store.hasTrack ? store.currentLine : "Standing by")
-                        .font(.system(size: 13, weight: .medium, design: .rounded))
-                        .foregroundStyle(store.hasTrack ? .white : .white.opacity(0.55))
-                        .lineLimit(2)
-                        .truncationMode(.tail)
-                        .multilineTextAlignment(.leading)
-                }
-            }
-            .padding(.leading, 8)
-            .animation(.easeInOut(duration: 0.18), value: store.expandedTile)
+            leadingBlock
+                .padding(.leading, 8)
+                .animation(.easeInOut(duration: 0.18), value: store.expandedTile)
             Spacer(minLength: 12)
             HStack(spacing: 8) {
                 ForEach(settings.tileOrder) { tile in
@@ -120,8 +87,72 @@ struct LyricBarView: View {
     }
 
     @ViewBuilder
+    private var leadingBlock: some View {
+        if !store.hasTrack && settings.showCalendar {
+            IdleView(event: store.calendarEvent, now: store.now)
+        } else {
+            HStack(spacing: 6) {
+                if settings.showArtwork {
+                    artworkButton
+                }
+                if let expanded = store.expandedTile, LyricBarView.expandable(expanded) {
+                    expandedRow(tile: expanded)
+                } else if settings.showLyrics {
+                    Text(store.hasTrack ? store.currentLine : "Standing by")
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundStyle(store.hasTrack ? .white : .white.opacity(0.55))
+                        .lineLimit(2)
+                        .truncationMode(.tail)
+                        .multilineTextAlignment(.leading)
+                }
+            }
+        }
+    }
+
+    private var artworkButton: some View {
+        Button(action: { store.playPause() }) {
+            AsyncImage(url: store.artworkURL) { phase in
+                switch phase {
+                case .success(let image):
+                    image.resizable().scaledToFill()
+                default:
+                    Image(systemName: "music.note")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.7))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.white.opacity(0.1))
+                }
+            }
+            .frame(width: 36, height: 36)
+            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var bannerChips: some View {
+        HStack(spacing: 4) {
+            if settings.showCall && store.callInCall {
+                callChip
+            }
+            if shouldShowCalendarBanner, let event = store.calendarEvent {
+                calendarChip(event: event)
+            }
+        }
+    }
+
+    private var shouldShowCalendarBanner: Bool {
+        guard settings.showCalendar, let event = store.calendarEvent else { return false }
+        if event.isOngoing { return false }
+        let minutesUntilStart = event.start.timeIntervalSince(store.now) / 60
+        return minutesUntilStart > 0 && minutesUntilStart <= settings.calendarImminentMinutes
+    }
+
+    @ViewBuilder
     private func tileView(for tile: Tile) -> some View {
-        if LyricBarView.sparklineSupported(tile) {
+        if tile == .calendar {
+            calendarTileButton
+        } else if LyricBarView.expandable(tile) {
             Button(action: { toggleExpansion(for: tile) }) {
                 baseTile(for: tile)
                     .opacity(store.expandedTile == tile ? 0.55 : 1)
@@ -130,6 +161,55 @@ struct LyricBarView: View {
         } else {
             baseTile(for: tile)
         }
+    }
+
+    @ViewBuilder
+    private var calendarTileButton: some View {
+        if store.hasTrack, let event = store.calendarEvent {
+            Button(action: { toggleExpansion(for: .calendar) }) {
+                CalendarTile(event: event, now: store.now)
+                    .opacity(store.expandedTile == .calendar ? 0.55 : 1)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    @ViewBuilder
+    private func expandedRow(tile: Tile) -> some View {
+        switch tile {
+        case .calendar:
+            if let event = store.calendarEvent {
+                calendarExpandedRow(event: event)
+            }
+        default:
+            expandedSparklineRow(tile: tile)
+        }
+    }
+
+    private func calendarExpandedRow(event: CalendarEventSample) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(event.title)
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .truncationMode(.tail)
+            Text(calendarSubtitle(for: event))
+                .font(.system(size: 10, weight: .medium, design: .rounded))
+                .foregroundStyle(.white.opacity(0.6))
+                .lineLimit(1)
+        }
+    }
+
+    private func calendarSubtitle(for event: CalendarEventSample) -> String {
+        let start = Self.timeFormatter.string(from: event.start)
+        let end = Self.timeFormatter.string(from: event.end)
+        if event.isOngoing {
+            let minutesLeft = max(0, Int(event.end.timeIntervalSince(store.now) / 60))
+            return "ends in \(minutesLeft)m · \(end)"
+        }
+        let minutesUntil = Int(event.start.timeIntervalSince(store.now) / 60)
+        let relative = minutesUntil <= 0 ? "now" : "in \(minutesUntil)m"
+        return "\(relative) · \(start) – \(end)"
     }
 
     @ViewBuilder
@@ -206,6 +286,7 @@ struct LyricBarView: View {
         }
         case .weather: WeatherTile(sample: store.weather)
         case .focus: FocusTile(timer: store.focus)
+        case .calendar: EmptyView()
         }
     }
 
@@ -253,9 +334,9 @@ struct LyricBarView: View {
         }
     }
 
-    private static func sparklineSupported(_ tile: Tile) -> Bool {
+    private static func expandable(_ tile: Tile) -> Bool {
         switch tile {
-        case .cpu, .gpu, .mem, .network: return true
+        case .cpu, .gpu, .mem, .network, .calendar: return true
         case .disk, .battery, .weather, .focus: return false
         }
     }
@@ -290,6 +371,25 @@ struct LyricBarView: View {
         )
     }
 
+    private func calendarChip(event: CalendarEventSample) -> some View {
+        let minutesUntil = max(0, Int(event.start.timeIntervalSince(store.now) / 60))
+        let label = minutesUntil <= 0 ? "now" : "\(minutesUntil)m"
+        return HStack(spacing: 3) {
+            Image(systemName: "calendar")
+                .font(.system(size: 7, weight: .bold))
+            Text("\(event.title) · \(label)")
+                .font(.system(size: 9, weight: .semibold, design: .rounded))
+                .lineLimit(1)
+                .truncationMode(.tail)
+        }
+        .foregroundStyle(.white)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 2)
+        .background(
+            Capsule().fill(Color(red: 0.95, green: 0.60, blue: 0.20).opacity(0.9))
+        )
+    }
+
     private var networkTile: some View {
         VStack(alignment: .trailing, spacing: 1) {
             HStack(spacing: 2) {
@@ -318,4 +418,10 @@ struct LyricBarView: View {
             }
         }
     }
+
+    private static let timeFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.setLocalizedDateFormatFromTemplate("HH:mm")
+        return f
+    }()
 }
