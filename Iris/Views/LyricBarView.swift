@@ -42,11 +42,11 @@ struct LyricBarView: View {
     }
 
     private var bar: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 0) {
             leadingBlock
                 .padding(.leading, 8)
                 .animation(.easeInOut(duration: 0.18), value: store.expandedTile)
-            Spacer(minLength: 12)
+            Spacer(minLength: 8)
             HStack(spacing: 8) {
                 ForEach(settings.tileOrder) { tile in
                     if settings.isVisible(tile) {
