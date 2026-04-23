@@ -144,6 +144,7 @@ struct SettingsView: View {
             }
             Section("System") {
                 Toggle("Launch at login", isOn: $draft.launchAtLogin)
+                Toggle("Auto-hide when a fullscreen app is frontmost", isOn: $draft.autoHideOnFullscreen)
             }
         }
         .formStyle(.grouped)

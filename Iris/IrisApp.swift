@@ -20,6 +20,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let net = NetworkMonitor()
     private let audio = AudioCapture()
     private let weather = WeatherMonitor()
+    private let fullscreen = FullscreenMonitor()
     private var timerCPU: Timer?
     private var timerTrack: Timer?
     private var timerWeather: Timer?
@@ -47,7 +48,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.overlay?.setWidth(self.settings.overlayWidth)
             self.syncAudioCapture()
             self.syncSpectrumLayout()
+            self.applyOverlayVisibility()
         }
+
+        fullscreen.onChange = { [weak self] _ in
+            self?.applyOverlayVisibility()
+        }
+        fullscreen.start()
 
         audio.onBands = { [weak self] bands in
             self?.store.spectrum = bands
@@ -130,6 +137,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Task { await audio.start() }
         } else {
             Task { await audio.stop() }
+        }
+    }
+
+    private func applyOverlayVisibility() {
+        guard let overlay else { return }
+        let shouldHide = settings.autoHideOnFullscreen && fullscreen.isFullscreen
+        NSAnimationContext.runAnimationGroup { ctx in
+            ctx.duration = 0.2
+            overlay.animator().alphaValue = shouldHide ? 0 : 1
         }
     }
 

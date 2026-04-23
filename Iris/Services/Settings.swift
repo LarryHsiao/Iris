@@ -55,6 +55,7 @@ final class Settings {
     var tileOrder: [Tile]
     var overlayWidth: Double
     var enabledExternalDiskIDs: Set<String>
+    var autoHideOnFullscreen: Bool
 
     var onApplied: (() -> Void)?
 
@@ -78,7 +79,8 @@ final class Settings {
         launchAtLogin: Bool,
         tileOrder: [Tile],
         overlayWidth: Double,
-        enabledExternalDiskIDs: Set<String>
+        enabledExternalDiskIDs: Set<String>,
+        autoHideOnFullscreen: Bool
     ) {
         self.showLyrics = showLyrics
         self.showArtwork = showArtwork
@@ -98,6 +100,7 @@ final class Settings {
         self.tileOrder = tileOrder
         self.overlayWidth = overlayWidth
         self.enabledExternalDiskIDs = enabledExternalDiskIDs
+        self.autoHideOnFullscreen = autoHideOnFullscreen
     }
 
     func isVisible(_ tile: Tile) -> Bool {
@@ -143,6 +146,7 @@ final class Settings {
         static let tileOrder = prefix + "tileOrder"
         static let overlayWidth = prefix + "overlayWidth"
         static let enabledExternalDiskIDs = prefix + "enabledExternalDiskIDs"
+        static let autoHideOnFullscreen = prefix + "autoHideOnFullscreen"
     }
 
     static func load() -> Settings {
@@ -165,7 +169,8 @@ final class Settings {
             launchAtLogin: LoginItem.isEnabled,
             tileOrder: loadTileOrder(d),
             overlayWidth: d.object(forKey: Key.overlayWidth) as? Double ?? 384,
-            enabledExternalDiskIDs: Set(d.stringArray(forKey: Key.enabledExternalDiskIDs) ?? [])
+            enabledExternalDiskIDs: Set(d.stringArray(forKey: Key.enabledExternalDiskIDs) ?? []),
+            autoHideOnFullscreen: d.object(forKey: Key.autoHideOnFullscreen) as? Bool ?? true
         )
     }
 
@@ -195,6 +200,7 @@ final class Settings {
         d.set(tileOrder.map(\.rawValue), forKey: Key.tileOrder)
         d.set(overlayWidth, forKey: Key.overlayWidth)
         d.set(Array(enabledExternalDiskIDs), forKey: Key.enabledExternalDiskIDs)
+        d.set(autoHideOnFullscreen, forKey: Key.autoHideOnFullscreen)
     }
 
     func copy() -> Settings {
@@ -216,7 +222,8 @@ final class Settings {
             launchAtLogin: launchAtLogin,
             tileOrder: tileOrder,
             overlayWidth: overlayWidth,
-            enabledExternalDiskIDs: enabledExternalDiskIDs
+            enabledExternalDiskIDs: enabledExternalDiskIDs,
+            autoHideOnFullscreen: autoHideOnFullscreen
         )
     }
 
@@ -239,6 +246,7 @@ final class Settings {
         tileOrder = other.tileOrder
         overlayWidth = other.overlayWidth
         enabledExternalDiskIDs = other.enabledExternalDiskIDs
+        autoHideOnFullscreen = other.autoHideOnFullscreen
     }
 
 }

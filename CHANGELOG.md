@@ -6,6 +6,7 @@ All notable changes to Iris are documented here.
 
 ### Added
 - Sparkline expansion: tap a CPU, GPU, MEM, or Network tile to replace the lyric line with a recent-history sparkline (last 60 samples) and current value. Re-tap or wait 5s to collapse.
+- Auto-hide overlay when a fullscreen app is frontmost: fades out smoothly and returns when you exit fullscreen. Toggle in Settings → System. Window stays alive so audio capture and polling keep running.
 
 ## [1.4] — 2026-04-22
 
