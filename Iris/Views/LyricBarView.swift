@@ -202,7 +202,7 @@ struct LyricBarView: View {
 
     @ViewBuilder
     private var calendarTileButton: some View {
-        if store.hasTrack, let event = store.calendarEvent {
+        if store.hasTrack, let event = store.calendarEvent, !shouldShowCalendarBanner {
             Button(action: { toggleExpansion(for: .calendar) }) {
                 CalendarTile(event: event, now: store.now)
                     .opacity(store.expandedTile == .calendar ? 0.55 : 1)
