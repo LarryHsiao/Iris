@@ -2,6 +2,19 @@
 
 All notable changes to Iris are documented here.
 
+## [1.6] — 2026-04-24
+
+### Added
+- Thin mode: halves the overlay bar (56pt → 30pt), hides the label beneath every gauge (CPU, GPU, MEM, BAT, FOC, CAL, disk drive icon), and truncates lyrics to a single line. Toggle in Settings → System → Overlay. The overlay's top edge stays pinned across toggles so the bar appears to grow/shrink downward rather than drift.
+- Mini tile preview next to each toggle in Settings → Tiles, so the thing being enabled is visible beside its switch.
+- Disk tile is tappable: the lyric slot swaps for per-volume free/total space while the tile is expanded.
+
+### Changed
+- Settings dialog is now vertically scrollable so in-progress UI cannot push controls past the bottom edge. Close and Apply stay pinned at the footer.
+- The Settings footer button formerly labelled "Cancel" now reads "Close" — it closes without applying, and the new label says that plainly. Escape still dismisses.
+- Focus tile no longer auto-hides during an ongoing calendar event; it stays in place so a pomodoro in progress is visible alongside a meeting.
+- Spectrum visualizer unmounts when fully faded, sparing the render pass while idle.
+
 ## [1.5] — 2026-04-23
 
 ### Added
