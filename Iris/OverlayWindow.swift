@@ -11,13 +11,18 @@ private final class DraggableHostingView<Content: View>: NSHostingView<Content> 
 
 final class OverlayWindow: NSWindow {
     private static let positionKey = "OverlayWindow.origin"
-    private static let barHeight: CGFloat = 56
+    static let fullBarHeight: CGFloat = 56
+    static let thinBarHeight: CGFloat = 30
+    private static var barHeight: CGFloat {
+        Settings.shared.thinMode ? thinBarHeight : fullBarHeight
+    }
     private static var height: CGFloat { barHeight + LyricBarView.bannerTotalHeight }
     static let minWidth: CGFloat = 320
     static let maxWidth: CGFloat = 1200
 
     private var bottomExtra: CGFloat = 0
     private var topExtra: CGFloat = LyricBarView.bannerTotalHeight
+    private var cachedBarHeight: CGFloat = OverlayWindow.barHeight
 
     init<Content: View>(rootView: Content, width: CGFloat) {
         let visible = NSScreen.main?.visibleFrame ?? .zero
@@ -60,12 +65,16 @@ final class OverlayWindow: NSWindow {
     }
 
     func setLayout(topExtra: CGFloat, bottomExtra: CGFloat) {
+        let newBarHeight = OverlayWindow.barHeight
+        let barDelta = newBarHeight - cachedBarHeight
+        cachedBarHeight = newBarHeight
         let bottomDelta = bottomExtra - self.bottomExtra
         self.topExtra = topExtra
         self.bottomExtra = bottomExtra
         var next = frame
-        next.size.height = OverlayWindow.barHeight + topExtra + bottomExtra
+        next.size.height = newBarHeight + topExtra + bottomExtra
         next.origin.y -= bottomDelta
+        next.origin.y -= barDelta
         setFrame(next, display: true)
     }
 

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct FocusTile: View {
     let timer: FocusTimer
+    var showLabel: Bool = true
 
     var body: some View {
         Button(action: { timer.toggle() }) {
@@ -18,9 +19,11 @@ struct FocusTile: View {
                         .foregroundStyle(.white)
                 }
                 .frame(width: 22, height: 22)
-                Text(phaseLabel)
-                    .font(.system(size: 7, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.6))
+                if showLabel {
+                    Text(phaseLabel)
+                        .font(.system(size: 7, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.6))
+                }
             }
             .opacity(timer.mode == .paused ? 0.55 : 1)
         }

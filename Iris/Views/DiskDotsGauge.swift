@@ -47,12 +47,13 @@ struct DiskDotsGauge: View {
                 }
             }
             .frame(width: Self.gridSize, height: Self.gridSize)
-            Image(systemName: volume.isSystem
-                  ? "internaldrive.fill"
-                  : "externaldrive.fill")
-                .font(.system(size: 7, weight: .medium))
-                .foregroundStyle(.white.opacity(0.6))
-                .opacity(showLabel ? 1 : 0)
+            if showLabel {
+                Image(systemName: volume.isSystem
+                      ? "internaldrive.fill"
+                      : "externaldrive.fill")
+                    .font(.system(size: 7, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.6))
+            }
         }
         .help(volume.name)
     }

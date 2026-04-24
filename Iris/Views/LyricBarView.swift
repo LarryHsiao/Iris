@@ -138,7 +138,7 @@ struct LyricBarView: View {
                     Text(store.hasTrack ? store.currentLine : "Standing by")
                         .font(.system(size: 13, weight: .medium, design: .rounded))
                         .foregroundStyle(store.hasTrack ? .white : .white.opacity(0.55))
-                        .lineLimit(2)
+                        .lineLimit(settings.thinMode ? 1 : 2)
                         .truncationMode(.tail)
                         .multilineTextAlignment(.leading)
                 }
@@ -204,7 +204,7 @@ struct LyricBarView: View {
     private var calendarTileButton: some View {
         if store.hasTrack, let event = store.calendarEvent {
             Button(action: { toggleExpansion(for: .calendar) }) {
-                CalendarTile(event: event, now: store.now)
+                CalendarTile(event: event, now: store.now, showLabel: !settings.thinMode)
                     .opacity(store.expandedTile == .calendar ? 0.55 : 1)
             }
             .buttonStyle(.plain)
@@ -325,24 +325,31 @@ struct LyricBarView: View {
         case .cpu: RingGauge(
             percent: store.cpuPercent,
             label: "CPU",
-            tint: Color(red: 0.38, green: 0.78, blue: 1.0)
+            tint: Color(red: 0.38, green: 0.78, blue: 1.0),
+            showLabel: !settings.thinMode
         )
         case .gpu: RingGauge(
             percent: store.gpuPercent,
             label: "GPU",
-            tint: Color(red: 0.75, green: 0.55, blue: 1.0)
+            tint: Color(red: 0.75, green: 0.55, blue: 1.0),
+            showLabel: !settings.thinMode
         )
         case .mem: RingGauge(
             percent: store.memPercent,
             label: "MEM",
-            tint: Color(red: 1.0, green: 0.72, blue: 0.30)
+            tint: Color(red: 1.0, green: 0.72, blue: 0.30),
+            showLabel: !settings.thinMode
         )
         case .disk: diskTile
         case .battery: if store.batteryPresent {
-            BatteryTile(percent: store.batteryPercent, charging: store.batteryCharging)
+            BatteryTile(
+                percent: store.batteryPercent,
+                charging: store.batteryCharging,
+                showLabel: !settings.thinMode
+            )
         }
         case .weather: WeatherTile(sample: store.weather)
-        case .focus: FocusTile(timer: store.focus)
+        case .focus: FocusTile(timer: store.focus, showLabel: !settings.thinMode)
         case .calendar: EmptyView()
         }
     }
@@ -471,7 +478,7 @@ struct LyricBarView: View {
     private var diskTile: some View {
         HStack(spacing: 6) {
             ForEach(store.disks) { volume in
-                DiskDotsGauge(volume: volume, showLabel: store.disks.count > 1)
+                DiskDotsGauge(volume: volume, showLabel: store.disks.count > 1 && !settings.thinMode)
             }
         }
     }

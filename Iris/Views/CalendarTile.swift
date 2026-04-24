@@ -3,6 +3,7 @@ import SwiftUI
 struct CalendarTile: View {
     let event: CalendarEventSample
     let now: Date
+    var showLabel: Bool = true
 
     var body: some View {
         VStack(spacing: 1) {
@@ -18,10 +19,12 @@ struct CalendarTile: View {
                     .foregroundStyle(.white)
             }
             .frame(width: 22, height: 22)
-            Text(countdownLabel)
-                .font(.system(size: 7, weight: .medium))
-                .foregroundStyle(.white.opacity(0.6))
-                .lineLimit(1)
+            if showLabel {
+                Text(countdownLabel)
+                    .font(.system(size: 7, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.6))
+                    .lineLimit(1)
+            }
         }
     }
 

@@ -4,6 +4,7 @@ struct RingGauge: View {
     let percent: Double
     let label: String
     let tint: Color
+    var showLabel: Bool = true
 
     var body: some View {
         VStack(spacing: 1) {
@@ -19,9 +20,11 @@ struct RingGauge: View {
                     .foregroundStyle(.white)
             }
             .frame(width: 22, height: 22)
-            Text(label)
-                .font(.system(size: 7, weight: .medium))
-                .foregroundStyle(.white.opacity(0.6))
+            if showLabel {
+                Text(label)
+                    .font(.system(size: 7, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.6))
+            }
         }
     }
 }

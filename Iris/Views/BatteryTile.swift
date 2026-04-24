@@ -3,6 +3,7 @@ import SwiftUI
 struct BatteryTile: View {
     let percent: Double
     let charging: Bool
+    var showLabel: Bool = true
 
     var body: some View {
         VStack(spacing: 1) {
@@ -24,9 +25,11 @@ struct BatteryTile: View {
                 }
             }
             .frame(width: 22, height: 22)
-            Text("BAT")
-                .font(.system(size: 7, weight: .medium))
-                .foregroundStyle(.white.opacity(0.6))
+            if showLabel {
+                Text("BAT")
+                    .font(.system(size: 7, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.6))
+            }
         }
     }
 

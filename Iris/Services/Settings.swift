@@ -65,6 +65,7 @@ final class Settings {
     var focusNotifications: Bool
     var showCalendar: Bool
     var calendarImminentMinutes: Double
+    var thinMode: Bool
 
     var onApplied: (() -> Void)?
 
@@ -96,7 +97,8 @@ final class Settings {
         restMinutes: Double,
         focusNotifications: Bool,
         showCalendar: Bool,
-        calendarImminentMinutes: Double
+        calendarImminentMinutes: Double,
+        thinMode: Bool
     ) {
         self.showLyrics = showLyrics
         self.showArtwork = showArtwork
@@ -124,6 +126,7 @@ final class Settings {
         self.focusNotifications = focusNotifications
         self.showCalendar = showCalendar
         self.calendarImminentMinutes = calendarImminentMinutes
+        self.thinMode = thinMode
     }
 
     func isVisible(_ tile: Tile) -> Bool {
@@ -181,6 +184,7 @@ final class Settings {
         static let focusNotifications = prefix + "focusNotifications"
         static let showCalendar = prefix + "showCalendar"
         static let calendarImminentMinutes = prefix + "calendarImminentMinutes"
+        static let thinMode = prefix + "thinMode"
     }
 
     static func load() -> Settings {
@@ -211,7 +215,8 @@ final class Settings {
             restMinutes: d.object(forKey: Key.restMinutes) as? Double ?? 5,
             focusNotifications: d.object(forKey: Key.focusNotifications) as? Bool ?? true,
             showCalendar: d.object(forKey: Key.showCalendar) as? Bool ?? false,
-            calendarImminentMinutes: d.object(forKey: Key.calendarImminentMinutes) as? Double ?? 5
+            calendarImminentMinutes: d.object(forKey: Key.calendarImminentMinutes) as? Double ?? 5,
+            thinMode: d.object(forKey: Key.thinMode) as? Bool ?? false
         )
     }
 
@@ -249,6 +254,7 @@ final class Settings {
         d.set(focusNotifications, forKey: Key.focusNotifications)
         d.set(showCalendar, forKey: Key.showCalendar)
         d.set(calendarImminentMinutes, forKey: Key.calendarImminentMinutes)
+        d.set(thinMode, forKey: Key.thinMode)
     }
 
     func copy() -> Settings {
@@ -278,7 +284,8 @@ final class Settings {
             restMinutes: restMinutes,
             focusNotifications: focusNotifications,
             showCalendar: showCalendar,
-            calendarImminentMinutes: calendarImminentMinutes
+            calendarImminentMinutes: calendarImminentMinutes,
+            thinMode: thinMode
         )
     }
 
@@ -309,6 +316,7 @@ final class Settings {
         focusNotifications = other.focusNotifications
         showCalendar = other.showCalendar
         calendarImminentMinutes = other.calendarImminentMinutes
+        thinMode = other.thinMode
     }
 
 }

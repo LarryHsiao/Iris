@@ -173,6 +173,10 @@ struct SettingsView: View {
                     Spacer()
                     Button("Reset to Default", action: onResetPosition)
                 }
+                Toggle("Thin mode", isOn: $draft.thinMode)
+                Text("Halves the bar, hides gauge labels, and truncates lyrics to a single line.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
             Section("System") {
                 Toggle("Launch at login", isOn: $draft.launchAtLogin)
@@ -237,7 +241,8 @@ struct SettingsView: View {
         let bottom: CGFloat = (draft.showSpectrum && draft.spectrumPosition == .below)
             ? LyricBarView.spectrumStripTotalHeight
             : 0
-        return 56 + top + bottom
+        let bar: CGFloat = draft.thinMode ? OverlayWindow.thinBarHeight : OverlayWindow.fullBarHeight
+        return bar + top + bottom
     }
 
     private func apply() {
