@@ -26,27 +26,32 @@ struct SettingsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            preview
-            Divider()
-            TabView {
-                contentForm
-                    .tabItem { Label("Content", systemImage: "text.alignleft") }
-                tilesForm
-                    .tabItem { Label("Tiles", systemImage: "square.grid.2x2") }
-                systemForm
-                    .tabItem { Label("System", systemImage: "gearshape") }
+            ScrollView(.vertical, showsIndicators: true) {
+                VStack(alignment: .leading, spacing: 14) {
+                    preview
+                    Divider()
+                    TabView {
+                        contentForm
+                            .tabItem { Label("Content", systemImage: "text.alignleft") }
+                        tilesForm
+                            .tabItem { Label("Tiles", systemImage: "square.grid.2x2") }
+                        systemForm
+                            .tabItem { Label("System", systemImage: "gearshape") }
+                    }
+                    .frame(minHeight: 260)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .frame(minHeight: 260)
             HStack {
                 Spacer()
-                Button("Cancel", role: .cancel) { onClose() }
+                Button("Close", role: .cancel) { onClose() }
                     .keyboardShortcut(.cancelAction)
                 Button("Apply", action: apply)
                     .keyboardShortcut(.defaultAction)
             }
         }
         .padding(16)
-        .frame(width: 520)
+        .frame(width: 520, height: 560)
     }
 
     private var contentForm: some View {
