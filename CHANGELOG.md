@@ -6,6 +6,7 @@ All notable changes to Iris are documented here.
 
 ### Fixed
 - Call chip and calendar banner chip now anchor to the left of the top-spectrum strip even when the spectrum is idle/faded. Previously the strip collapsed to the chip's width when the spectrum branch was gone, and the parent VStack's default center alignment drifted the chip to the middle of the bar.
+- Single-volume disk tile now aligns with the other tiles at full bar height. The thin-mode label-removal refactor accidentally dropped the 8pt reserve that used to keep the disk gauge the same height as CPU / GPU / MEM; the reserve is back in large mode while thin mode still collapses the row completely.
 
 ### Changed
 - First launch no longer shows the "Iris wants to control Spotify" AppleEvents prompt. The Spotify `osascript` call is now skipped whenever Spotify isn't running, deferring the TCC prompt until the user has Spotify open — a contextual moment rather than a cold-boot surprise.
