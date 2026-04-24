@@ -10,6 +10,10 @@ All notable changes to Iris are documented here.
 
 ### Changed
 - First launch no longer shows the "Iris wants to control Spotify" AppleEvents prompt. The Spotify `osascript` call is now skipped whenever Spotify isn't running, deferring the TCC prompt until the user has Spotify open — a contextual moment rather than a cold-boot surprise.
+- Settings dialog preview now horizontally centers the `LyricBarView` instead of pinning it to the leading edge, so the mock overlay reads as a balanced widget rather than a misaligned stripe.
+
+### Added
+- `dev.sh` at the repo root: builds Iris in Debug, stops any running instance, and launches the fresh binary. Use for rebuild-and-relaunch without opening Xcode.
 
 ## [1.6] — 2026-04-24
 

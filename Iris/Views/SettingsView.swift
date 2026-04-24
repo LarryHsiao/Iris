@@ -235,7 +235,7 @@ struct SettingsView: View {
                 .foregroundStyle(.secondary)
             LyricBarView(store: demoStore, settings: draft)
                 .frame(width: min(draft.overlayWidth, 488), height: previewHeight)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .center)
         }
     }
 
