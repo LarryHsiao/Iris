@@ -64,6 +64,17 @@ struct SettingsView: View {
             Section("Call") {
                 Toggle("Show on-call label", isOn: $draft.showCall)
             }
+            Section("Weather") {
+                Picker("Units", selection: $draft.weatherUnit) {
+                    ForEach(WeatherUnit.allCases) { unit in
+                        Text(unit.label).tag(unit)
+                    }
+                }
+                .pickerStyle(.segmented)
+                Text("When no track is playing, a brief weather line fills the lyric slot.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
             Section("Calendar") {
                 Toggle("Show upcoming calendar event", isOn: $draft.showCalendar)
                 if draft.showCalendar {
@@ -310,7 +321,7 @@ private struct TilePreview: View {
         case .battery:
             BatteryTile(percent: store.batteryPercent, charging: store.batteryCharging)
         case .weather:
-            WeatherTile(sample: store.weather)
+            WeatherTile(sample: store.weather, unit: .celsius)
         case .focus:
             FocusTile(timer: store.focus)
         case .calendar:

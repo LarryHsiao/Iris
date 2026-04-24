@@ -126,8 +126,14 @@ struct LyricBarView: View {
 
     @ViewBuilder
     private var leadingBlock: some View {
-        if !store.hasTrack && settings.showCalendar {
-            IdleView(event: store.calendarEvent, now: store.now)
+        let idleWeather = settings.showLyrics && settings.showWeather ? store.weather : nil
+        if !store.hasTrack && (settings.showCalendar || idleWeather != nil) {
+            IdleView(
+                event: settings.showCalendar ? store.calendarEvent : nil,
+                weather: idleWeather,
+                weatherUnit: settings.weatherUnit,
+                now: store.now
+            )
         } else {
             HStack(spacing: 6) {
                 if settings.showArtwork {
@@ -349,7 +355,7 @@ struct LyricBarView: View {
                 showLabel: !settings.thinMode
             )
         }
-        case .weather: WeatherTile(sample: store.weather)
+        case .weather: WeatherTile(sample: store.weather, unit: settings.weatherUnit)
         case .focus: FocusTile(timer: store.focus, showLabel: !settings.thinMode)
         case .calendar: EmptyView()
         }

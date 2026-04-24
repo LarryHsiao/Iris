@@ -15,6 +15,19 @@ enum SpectrumPosition: String, CaseIterable, Identifiable, Hashable {
     }
 }
 
+enum WeatherUnit: String, CaseIterable, Identifiable, Hashable {
+    case celsius, fahrenheit
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .celsius: return "°C"
+        case .fahrenheit: return "°F"
+        }
+    }
+}
+
 enum Tile: String, CaseIterable, Identifiable, Hashable {
     case network, cpu, gpu, mem, disk, battery, weather, focus, calendar
 
@@ -52,6 +65,7 @@ final class Settings {
     var showDisk: Bool
     var showBattery: Bool
     var showWeather: Bool
+    var weatherUnit: WeatherUnit
     var samplingInterval: Double
     var launchAtLogin: Bool
     var tileOrder: [Tile]
@@ -85,6 +99,7 @@ final class Settings {
         showDisk: Bool,
         showBattery: Bool,
         showWeather: Bool,
+        weatherUnit: WeatherUnit,
         samplingInterval: Double,
         launchAtLogin: Bool,
         tileOrder: [Tile],
@@ -113,6 +128,7 @@ final class Settings {
         self.showDisk = showDisk
         self.showBattery = showBattery
         self.showWeather = showWeather
+        self.weatherUnit = weatherUnit
         self.samplingInterval = samplingInterval
         self.launchAtLogin = launchAtLogin
         self.tileOrder = tileOrder
@@ -172,6 +188,7 @@ final class Settings {
         static let showDisk = prefix + "showDisk"
         static let showBattery = prefix + "showBattery"
         static let showWeather = prefix + "showWeather"
+        static let weatherUnit = prefix + "weatherUnit"
         static let samplingInterval = prefix + "samplingInterval"
         static let tileOrder = prefix + "tileOrder"
         static let overlayWidth = prefix + "overlayWidth"
@@ -203,6 +220,7 @@ final class Settings {
             showDisk: d.object(forKey: Key.showDisk) as? Bool ?? true,
             showBattery: d.object(forKey: Key.showBattery) as? Bool ?? true,
             showWeather: d.object(forKey: Key.showWeather) as? Bool ?? true,
+            weatherUnit: (d.string(forKey: Key.weatherUnit).flatMap(WeatherUnit.init(rawValue:))) ?? .celsius,
             samplingInterval: d.object(forKey: Key.samplingInterval) as? Double ?? 2.0,
             launchAtLogin: LoginItem.isEnabled,
             tileOrder: loadTileOrder(d),
@@ -242,6 +260,7 @@ final class Settings {
         d.set(showDisk, forKey: Key.showDisk)
         d.set(showBattery, forKey: Key.showBattery)
         d.set(showWeather, forKey: Key.showWeather)
+        d.set(weatherUnit.rawValue, forKey: Key.weatherUnit)
         d.set(samplingInterval, forKey: Key.samplingInterval)
         d.set(tileOrder.map(\.rawValue), forKey: Key.tileOrder)
         d.set(overlayWidth, forKey: Key.overlayWidth)
@@ -272,6 +291,7 @@ final class Settings {
             showDisk: showDisk,
             showBattery: showBattery,
             showWeather: showWeather,
+            weatherUnit: weatherUnit,
             samplingInterval: samplingInterval,
             launchAtLogin: launchAtLogin,
             tileOrder: tileOrder,
@@ -303,6 +323,7 @@ final class Settings {
         showDisk = other.showDisk
         showBattery = other.showBattery
         showWeather = other.showWeather
+        weatherUnit = other.weatherUnit
         samplingInterval = other.samplingInterval
         launchAtLogin = other.launchAtLogin
         tileOrder = other.tileOrder

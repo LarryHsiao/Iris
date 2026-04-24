@@ -2,6 +2,8 @@ import SwiftUI
 
 struct IdleView: View {
     let event: CalendarEventSample?
+    var weather: WeatherSample? = nil
+    var weatherUnit: WeatherUnit = .celsius
     let now: Date
 
     var body: some View {
@@ -27,19 +29,40 @@ struct IdleView: View {
         }
     }
 
+    private enum Mode { case event, weather, clock }
+
+    private var mode: Mode {
+        if event != nil { return .event }
+        if weather != nil { return .weather }
+        return .clock
+    }
+
     private var iconName: String {
-        event == nil ? "clock.fill" : "calendar"
+        switch mode {
+        case .event: return "calendar"
+        case .weather:
+            guard let weather else { return "cloud.fill" }
+            return WeatherSymbol.name(for: weather.code)
+        case .clock: return "clock.fill"
+        }
     }
 
     private var primaryLine: String {
-        if let event {
-            return event.title
+        switch mode {
+        case .event:
+            return event?.title ?? ""
+        case .weather:
+            guard let weather else { return "" }
+            return WeatherNarrator.primary(sample: weather, unit: weatherUnit)
+        case .clock:
+            return Self.timeFormatter.string(from: now)
         }
-        return Self.timeFormatter.string(from: now)
     }
 
     private var secondaryLine: String {
-        if let event {
+        switch mode {
+        case .event:
+            guard let event else { return "" }
             if event.isOngoing {
                 let minutesLeft = max(0, Int(event.end.timeIntervalSince(now) / 60))
                 return "ends in \(minutesLeft)m"
@@ -48,8 +71,12 @@ struct IdleView: View {
             if minutesUntil <= 1 { return "now" }
             if minutesUntil < 60 { return "in \(minutesUntil)m" }
             return Self.timeFormatter.string(from: event.start)
+        case .weather:
+            guard let weather else { return "" }
+            return WeatherNarrator.secondary(sample: weather, now: now)
+        case .clock:
+            return Self.dateFormatter.string(from: now)
         }
-        return Self.dateFormatter.string(from: now)
     }
 
     private static let timeFormatter: DateFormatter = {

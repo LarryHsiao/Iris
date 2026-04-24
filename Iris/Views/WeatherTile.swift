@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WeatherTile: View {
     let sample: WeatherSample?
+    var unit: WeatherUnit = .celsius
 
     var body: some View {
         VStack(spacing: 1) {
@@ -22,6 +23,6 @@ struct WeatherTile: View {
 
     private var temperatureString: String {
         guard let sample else { return "—" }
-        return "\(Int(sample.temperatureC.rounded()))°"
+        return WeatherNarrator.temperature(celsius: sample.temperatureC, unit: unit)
     }
 }
