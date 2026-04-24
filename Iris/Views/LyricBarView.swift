@@ -41,6 +41,7 @@ struct LyricBarView: View {
                 .padding(.leading, active ? 12 : 8)
                 .padding(.bottom, active ? 4 : 0)
         }
+        .frame(maxWidth: .infinity, alignment: .bottomLeading)
         .frame(height: LyricBarView.spectrumStripHeight)
         .padding(.bottom, LyricBarView.bannerSpacing)
     }

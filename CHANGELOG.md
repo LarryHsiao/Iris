@@ -2,6 +2,14 @@
 
 All notable changes to Iris are documented here.
 
+## [Unreleased]
+
+### Fixed
+- Call chip and calendar banner chip now anchor to the left of the top-spectrum strip even when the spectrum is idle/faded. Previously the strip collapsed to the chip's width when the spectrum branch was gone, and the parent VStack's default center alignment drifted the chip to the middle of the bar.
+
+### Changed
+- First launch no longer shows the "Iris wants to control Spotify" AppleEvents prompt. The Spotify `osascript` call is now skipped whenever Spotify isn't running, deferring the TCC prompt until the user has Spotify open — a contextual moment rather than a cold-boot surprise.
+
 ## [1.6] — 2026-04-24
 
 ### Added
