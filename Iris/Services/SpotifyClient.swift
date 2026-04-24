@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 
 struct SpotifyTrack: Equatable {
@@ -11,7 +12,14 @@ struct SpotifyTrack: Equatable {
 }
 
 enum SpotifyClient {
+    private static let bundleID = "com.spotify.client"
+
+    private static func isRunning() -> Bool {
+        !NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).isEmpty
+    }
+
     static func currentTrack() -> SpotifyTrack? {
+        guard isRunning() else { return nil }
         let script = """
         tell application "Spotify"
             if it is running then
@@ -47,6 +55,7 @@ enum SpotifyClient {
     }
 
     static func playPause() {
+        guard isRunning() else { return }
         let script = """
         tell application "Spotify"
             if it is running then playpause
