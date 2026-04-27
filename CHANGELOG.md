@@ -6,6 +6,7 @@ All notable changes to Iris are documented here.
 
 ### Added
 - Calendar imminent chip is now a Join button when the event carries a meeting URL (Microsoft Teams, Zoom, Google Meet, Webex). Icon swaps to a video glyph and the chip turns blue; click opens the link via the system URL handler. The link is parsed from the event's URL field, location, or notes — no extra permission required. The chip persists for the duration of an ongoing meeting (label switches to "Xm left") so re-joining after a drop is one tap away.
+- Air quality + pollen via Open-Meteo. New AIR tile renders the European AQI as a 22pt ring tinted by band (green → purple); off by default, opt in via Settings → Tiles. The Weather tile is now tappable: tap to swap the lyric line for "Temp · City" plus an Air subtitle that combines AQI, band, and active grass/tree/weed pollen levels. AQI is fetched on first need and refreshed every 30 minutes, gated on either the AIR tile or the Weather tile being enabled. No new permission — same IP-based geolocation as the existing weather lookup.
 
 ### Fixed
 - Call chip and calendar banner chip now anchor to the left of the top-spectrum strip even when the spectrum is idle/faded. Previously the strip collapsed to the chip's width when the spectrum branch was gone, and the parent VStack's default center alignment drifted the chip to the middle of the bar.

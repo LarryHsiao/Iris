@@ -29,7 +29,7 @@ enum WeatherUnit: String, CaseIterable, Identifiable, Hashable {
 }
 
 enum Tile: String, CaseIterable, Identifiable, Hashable {
-    case network, cpu, gpu, mem, disk, battery, weather, focus, calendar
+    case network, cpu, gpu, mem, disk, battery, weather, air, focus, calendar
 
     var id: String { rawValue }
 
@@ -42,12 +42,13 @@ enum Tile: String, CaseIterable, Identifiable, Hashable {
         case .disk: return "Disk"
         case .battery: return "Battery"
         case .weather: return "Weather"
+        case .air: return "Air Quality"
         case .focus: return "Focus"
         case .calendar: return "Calendar"
         }
     }
 
-    static let defaultOrder: [Tile] = [.network, .cpu, .gpu, .mem, .disk, .battery, .weather, .focus, .calendar]
+    static let defaultOrder: [Tile] = [.network, .cpu, .gpu, .mem, .disk, .battery, .weather, .air, .focus, .calendar]
 }
 
 @Observable
@@ -65,6 +66,7 @@ final class Settings {
     var showDisk: Bool
     var showBattery: Bool
     var showWeather: Bool
+    var showAir: Bool
     var weatherUnit: WeatherUnit
     var samplingInterval: Double
     var launchAtLogin: Bool
@@ -99,6 +101,7 @@ final class Settings {
         showDisk: Bool,
         showBattery: Bool,
         showWeather: Bool,
+        showAir: Bool,
         weatherUnit: WeatherUnit,
         samplingInterval: Double,
         launchAtLogin: Bool,
@@ -128,6 +131,7 @@ final class Settings {
         self.showDisk = showDisk
         self.showBattery = showBattery
         self.showWeather = showWeather
+        self.showAir = showAir
         self.weatherUnit = weatherUnit
         self.samplingInterval = samplingInterval
         self.launchAtLogin = launchAtLogin
@@ -154,6 +158,7 @@ final class Settings {
         case .disk: return showDisk
         case .battery: return showBattery
         case .weather: return showWeather
+        case .air: return showAir
         case .focus: return showFocus
         case .calendar: return showCalendar
         }
@@ -168,6 +173,7 @@ final class Settings {
         case .disk: showDisk = value
         case .battery: showBattery = value
         case .weather: showWeather = value
+        case .air: showAir = value
         case .focus: showFocus = value
         case .calendar: showCalendar = value
         }
@@ -188,6 +194,7 @@ final class Settings {
         static let showDisk = prefix + "showDisk"
         static let showBattery = prefix + "showBattery"
         static let showWeather = prefix + "showWeather"
+        static let showAir = prefix + "showAir"
         static let weatherUnit = prefix + "weatherUnit"
         static let samplingInterval = prefix + "samplingInterval"
         static let tileOrder = prefix + "tileOrder"
@@ -220,6 +227,7 @@ final class Settings {
             showDisk: d.object(forKey: Key.showDisk) as? Bool ?? true,
             showBattery: d.object(forKey: Key.showBattery) as? Bool ?? true,
             showWeather: d.object(forKey: Key.showWeather) as? Bool ?? true,
+            showAir: d.object(forKey: Key.showAir) as? Bool ?? false,
             weatherUnit: (d.string(forKey: Key.weatherUnit).flatMap(WeatherUnit.init(rawValue:))) ?? .celsius,
             samplingInterval: d.object(forKey: Key.samplingInterval) as? Double ?? 2.0,
             launchAtLogin: LoginItem.isEnabled,
@@ -260,6 +268,7 @@ final class Settings {
         d.set(showDisk, forKey: Key.showDisk)
         d.set(showBattery, forKey: Key.showBattery)
         d.set(showWeather, forKey: Key.showWeather)
+        d.set(showAir, forKey: Key.showAir)
         d.set(weatherUnit.rawValue, forKey: Key.weatherUnit)
         d.set(samplingInterval, forKey: Key.samplingInterval)
         d.set(tileOrder.map(\.rawValue), forKey: Key.tileOrder)
@@ -291,6 +300,7 @@ final class Settings {
             showDisk: showDisk,
             showBattery: showBattery,
             showWeather: showWeather,
+            showAir: showAir,
             weatherUnit: weatherUnit,
             samplingInterval: samplingInterval,
             launchAtLogin: launchAtLogin,
@@ -323,6 +333,7 @@ final class Settings {
         showDisk = other.showDisk
         showBattery = other.showBattery
         showWeather = other.showWeather
+        showAir = other.showAir
         weatherUnit = other.weatherUnit
         samplingInterval = other.samplingInterval
         launchAtLogin = other.launchAtLogin

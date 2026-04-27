@@ -228,9 +228,51 @@ struct LyricBarView: View {
             }
         case .disk:
             diskExpandedRow
+        case .weather:
+            weatherExpandedRow(weather: store.weather, air: store.airQuality)
         default:
             expandedSparklineRow(tile: tile)
         }
+    }
+
+    private func weatherExpandedRow(weather: WeatherSample?, air: AirQualitySample?) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(weatherTitle(for: weather))
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .truncationMode(.tail)
+            if let line = airSubtitle(for: air) {
+                Text(line)
+                    .font(.system(size: 10, weight: .medium, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.7))
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+            }
+        }
+    }
+
+    private func weatherTitle(for sample: WeatherSample?) -> String {
+        guard let sample else { return "Weather offline" }
+        let temp = WeatherNarrator.temperature(celsius: sample.temperatureC, unit: settings.weatherUnit)
+        if let city = sample.city, !city.isEmpty { return "\(temp) · \(city)" }
+        return temp
+    }
+
+    private func airSubtitle(for sample: AirQualitySample?) -> String? {
+        guard let sample else { return nil }
+        let band = AQIBand(aqi: sample.aqi)
+        var parts: [String] = ["Air \(sample.aqi) (\(band.label))"]
+        if let g = sample.grassPollen, g > 0 {
+            parts.append("Grass \(PollenLevel.grass(g).short)")
+        }
+        if let t = sample.treePollen, t > 0 {
+            parts.append("Tree \(PollenLevel.tree(t).short)")
+        }
+        if let w = sample.weedPollen, w > 0 {
+            parts.append("Weed \(PollenLevel.weed(w).short)")
+        }
+        return parts.joined(separator: " · ")
     }
 
     private var diskExpandedRow: some View {
@@ -357,6 +399,7 @@ struct LyricBarView: View {
             )
         }
         case .weather: WeatherTile(sample: store.weather, unit: settings.weatherUnit)
+        case .air: AirTile(sample: store.airQuality, showLabel: !settings.thinMode)
         case .focus: FocusTile(timer: store.focus, showLabel: !settings.thinMode)
         case .calendar: EmptyView()
         }
@@ -408,8 +451,8 @@ struct LyricBarView: View {
 
     private static func expandable(_ tile: Tile) -> Bool {
         switch tile {
-        case .cpu, .gpu, .mem, .network, .calendar, .disk: return true
-        case .battery, .weather, .focus: return false
+        case .cpu, .gpu, .mem, .network, .calendar, .disk, .weather: return true
+        case .battery, .air, .focus: return false
         }
     }
 

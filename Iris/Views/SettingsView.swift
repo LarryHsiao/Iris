@@ -322,6 +322,8 @@ private struct TilePreview: View {
             BatteryTile(percent: store.batteryPercent, charging: store.batteryCharging)
         case .weather:
             WeatherTile(sample: store.weather, unit: .celsius)
+        case .air:
+            AirTile(sample: store.airQuality)
         case .focus:
             FocusTile(timer: store.focus)
         case .calendar:

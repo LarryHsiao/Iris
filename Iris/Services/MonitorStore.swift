@@ -20,6 +20,7 @@ final class MonitorStore {
     var batteryCharging: Bool = false
     var batteryPresent: Bool = false
     var weather: WeatherSample?
+    var airQuality: AirQualitySample?
     var callInCall: Bool = false
     var callAppName: String?
     var spectrum: [Float] = Array(repeating: 0, count: AudioCapture.bandCount) {
@@ -91,6 +92,14 @@ final class MonitorStore {
         s.batteryCharging = true
         s.batteryPresent = true
         s.weather = WeatherSample(temperatureC: 18, code: 2, city: "Taipei")
+        s.airQuality = AirQualitySample(
+            aqi: 42,
+            pm2_5: 12,
+            pm10: 25,
+            grassPollen: 5,
+            treePollen: 28,
+            weedPollen: 0
+        )
         s.callInCall = true
         s.callAppName = "Teams"
         s.spectrum = (0..<AudioCapture.bandCount).map { i in

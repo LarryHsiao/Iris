@@ -20,6 +20,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let net = NetworkMonitor()
     private let audio = AudioCapture()
     private let weather = WeatherMonitor()
+    private let airQuality = AirQualityMonitor()
     private let fullscreen = FullscreenMonitor()
     private let wifi = WiFiInfoMonitor()
     private let calendar = CalendarMonitor()
@@ -27,6 +28,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var timerCPU: Timer?
     private var timerTrack: Timer?
     private var timerWeather: Timer?
+    private var timerAir: Timer?
     private var currentTrackID: String?
     private var lyrics: SyncedLyrics?
 
@@ -55,6 +57,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.syncWiFiInfo()
             self.syncFocusSettings()
             self.syncCalendar()
+            self.syncAirQuality()
         }
 
         fullscreen.onChange = { [weak self] _ in
@@ -82,6 +85,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         startTimers()
         syncAudioCapture()
         syncSpectrumLayout()
+        syncAirQuality()
     }
 
     private func openSettings() {
@@ -109,6 +113,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func tickWeather() async {
         let sample = await weather.sample()
         store.weather = sample
+    }
+
+    private func tickAirQuality() async {
+        let sample = await airQuality.sample()
+        store.airQuality = sample
+    }
+
+    private func syncAirQuality() {
+        let needed = settings.showAir || settings.showWeather
+        timerAir?.invalidate()
+        timerAir = nil
+        guard needed else {
+            store.airQuality = nil
+            return
+        }
+        Task { @MainActor in await tickAirQuality() }
+        timerAir = Timer.scheduledTimer(withTimeInterval: 1800, repeats: true) { [weak self] _ in
+            Task { @MainActor in await self?.tickAirQuality() }
+        }
     }
 
     private func scheduleSystemTimer() {
