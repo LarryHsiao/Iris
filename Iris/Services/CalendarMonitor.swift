@@ -7,6 +7,7 @@ struct CalendarEventSample: Equatable {
     let title: String
     let start: Date
     let end: Date
+    let joinURL: URL?
 
     var isOngoing: Bool { Date() >= start && Date() < end }
     var isFuture: Bool { Date() < start }
@@ -73,8 +74,42 @@ final class CalendarMonitor {
         return CalendarEventSample(
             title: event.title ?? "Event",
             start: event.startDate,
-            end: event.endDate
+            end: event.endDate,
+            joinURL: Self.extractJoinURL(from: event)
         )
+    }
+
+    private static let joinURLRegex: NSRegularExpression? = {
+        let pattern = #"(?i)(?:msteams:[^\s<>"')]+|https?://(?:teams\.microsoft\.com|teams\.live\.com|[\w-]+\.zoom\.us|zoom\.us|meet\.google\.com|[\w-]+\.webex\.com|webex\.com)/[^\s<>"')]+)"#
+        return try? NSRegularExpression(pattern: pattern)
+    }()
+
+    private static func extractJoinURL(from event: EKEvent) -> URL? {
+        if let url = event.url, isJoinURL(url.absoluteString) {
+            return url
+        }
+        for haystack in [event.notes, event.location].compactMap({ $0 }) {
+            if let match = firstJoinURL(in: haystack) {
+                return match
+            }
+        }
+        return nil
+    }
+
+    private static func isJoinURL(_ string: String) -> Bool {
+        guard let regex = joinURLRegex else { return false }
+        let range = NSRange(string.startIndex..<string.endIndex, in: string)
+        return regex.firstMatch(in: string, range: range) != nil
+    }
+
+    private static func firstJoinURL(in text: String) -> URL? {
+        guard let regex = joinURLRegex else { return nil }
+        let range = NSRange(text.startIndex..<text.endIndex, in: text)
+        guard let match = regex.firstMatch(in: text, range: range),
+              let r = Range(match.range, in: text) else { return nil }
+        let raw = String(text[r])
+        let decoded = raw.replacingOccurrences(of: "&amp;", with: "&")
+        return URL(string: decoded)
     }
 
     private static func presentSilentFailureAlert() {

@@ -3,6 +3,7 @@ import SwiftUI
 struct LyricBarView: View {
     let store: MonitorStore
     let settings: Settings
+    @Environment(\.openURL) private var openURL
 
     static let bannerHeight: CGFloat = 14
     static let bannerSpacing: CGFloat = 4
@@ -187,7 +188,7 @@ struct LyricBarView: View {
 
     private var shouldShowCalendarBanner: Bool {
         guard settings.showCalendar, let event = store.calendarEvent else { return false }
-        if event.isOngoing { return false }
+        if event.isOngoing { return true }
         let minutesUntilStart = event.start.timeIntervalSince(store.now) / 60
         return minutesUntilStart > 0 && minutesUntilStart <= settings.calendarImminentMinutes
     }
@@ -442,11 +443,30 @@ struct LyricBarView: View {
         )
     }
 
+    @ViewBuilder
     private func calendarChip(event: CalendarEventSample) -> some View {
-        let minutesUntil = max(0, Int(event.start.timeIntervalSince(store.now) / 60))
-        let label = minutesUntil <= 0 ? "now" : "\(minutesUntil)m"
+        if let url = event.joinURL {
+            Button(action: { openURL(url) }) {
+                calendarChipBody(event: event, joinable: true)
+            }
+            .buttonStyle(.plain)
+            .help("Join \(event.title)")
+        } else {
+            calendarChipBody(event: event, joinable: false)
+        }
+    }
+
+    private func calendarChipBody(event: CalendarEventSample, joinable: Bool) -> some View {
+        let label: String = {
+            if event.isOngoing {
+                let minutesLeft = max(0, Int(event.end.timeIntervalSince(store.now) / 60))
+                return minutesLeft <= 0 ? "ending" : "\(minutesLeft)m left"
+            }
+            let minutesUntil = max(0, Int(event.start.timeIntervalSince(store.now) / 60))
+            return minutesUntil <= 0 ? "now" : "\(minutesUntil)m"
+        }()
         return HStack(spacing: 3) {
-            Image(systemName: "calendar")
+            Image(systemName: joinable ? "video.fill" : "calendar")
                 .font(.system(size: 7, weight: .bold))
             Text("\(event.title) · \(label)")
                 .font(.system(size: 9, weight: .semibold, design: .rounded))
@@ -457,7 +477,9 @@ struct LyricBarView: View {
         .padding(.horizontal, 6)
         .padding(.vertical, 2)
         .background(
-            Capsule().fill(Color(red: 0.95, green: 0.60, blue: 0.20).opacity(0.9))
+            Capsule().fill(joinable
+                ? Color(red: 0.29, green: 0.55, blue: 0.95).opacity(0.95)
+                : Color(red: 0.95, green: 0.60, blue: 0.20).opacity(0.9))
         )
     }
 

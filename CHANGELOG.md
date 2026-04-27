@@ -4,6 +4,9 @@ All notable changes to Iris are documented here.
 
 ## [Unreleased]
 
+### Added
+- Calendar imminent chip is now a Join button when the event carries a meeting URL (Microsoft Teams, Zoom, Google Meet, Webex). Icon swaps to a video glyph and the chip turns blue; click opens the link via the system URL handler. The link is parsed from the event's URL field, location, or notes — no extra permission required. The chip persists for the duration of an ongoing meeting (label switches to "Xm left") so re-joining after a drop is one tap away.
+
 ### Fixed
 - Call chip and calendar banner chip now anchor to the left of the top-spectrum strip even when the spectrum is idle/faded. Previously the strip collapsed to the chip's width when the spectrum branch was gone, and the parent VStack's default center alignment drifted the chip to the middle of the bar.
 - Single-volume disk tile now aligns with the other tiles at full bar height. The thin-mode label-removal refactor accidentally dropped the 8pt reserve that used to keep the disk gauge the same height as CPU / GPU / MEM; the reserve is back in large mode while thin mode still collapses the row completely.
