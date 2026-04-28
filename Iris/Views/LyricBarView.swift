@@ -293,7 +293,7 @@ struct LyricBarView: View {
     private var diskExpandedRow: some View {
         VStack(alignment: .leading, spacing: 1) {
             ForEach(store.disks) { volume in
-                Text("\(volume.name) · \(Self.byteFormatter.string(fromByteCount: volume.freeBytes)) free of \(Self.byteFormatter.string(fromByteCount: volume.totalBytes))")
+                Text("\(Self.byteFormatter.string(fromByteCount: volume.freeBytes)) · \(volume.name)")
                     .font(.system(size: 11, weight: .semibold, design: .rounded))
                     .foregroundStyle(.white.opacity(0.9))
                     .lineLimit(1)
