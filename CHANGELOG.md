@@ -4,6 +4,8 @@ All notable changes to Iris are documented here.
 
 ## [Unreleased]
 
+## [1.7.1] — 2026-04-28
+
 ### Added
 - Follow-up calendar chip: when an upcoming meeting overlaps with the
   ongoing one or starts within the imminent window, a second chip
