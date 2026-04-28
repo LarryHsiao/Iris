@@ -79,6 +79,11 @@ final class Settings {
     var focusMinutes: Double
     var restMinutes: Double
     var focusNotifications: Bool
+    var focusSoundEnabled: Bool
+    var focusSoundName: String
+    var focusSoundRepeatCount: Int
+    var focusSoundRepeatInterval: Double
+    var focusPauseBetweenPhases: Bool
     var showCalendar: Bool
     var calendarImminentMinutes: Double
     var thinMode: Bool
@@ -114,6 +119,11 @@ final class Settings {
         focusMinutes: Double,
         restMinutes: Double,
         focusNotifications: Bool,
+        focusSoundEnabled: Bool,
+        focusSoundName: String,
+        focusSoundRepeatCount: Int,
+        focusSoundRepeatInterval: Double,
+        focusPauseBetweenPhases: Bool,
         showCalendar: Bool,
         calendarImminentMinutes: Double,
         thinMode: Bool
@@ -144,6 +154,11 @@ final class Settings {
         self.focusMinutes = focusMinutes
         self.restMinutes = restMinutes
         self.focusNotifications = focusNotifications
+        self.focusSoundEnabled = focusSoundEnabled
+        self.focusSoundName = focusSoundName
+        self.focusSoundRepeatCount = focusSoundRepeatCount
+        self.focusSoundRepeatInterval = focusSoundRepeatInterval
+        self.focusPauseBetweenPhases = focusPauseBetweenPhases
         self.showCalendar = showCalendar
         self.calendarImminentMinutes = calendarImminentMinutes
         self.thinMode = thinMode
@@ -206,6 +221,11 @@ final class Settings {
         static let focusMinutes = prefix + "focusMinutes"
         static let restMinutes = prefix + "restMinutes"
         static let focusNotifications = prefix + "focusNotifications"
+        static let focusSoundEnabled = prefix + "focusSoundEnabled"
+        static let focusSoundName = prefix + "focusSoundName"
+        static let focusSoundRepeatCount = prefix + "focusSoundRepeatCount"
+        static let focusSoundRepeatInterval = prefix + "focusSoundRepeatInterval"
+        static let focusPauseBetweenPhases = prefix + "focusPauseBetweenPhases"
         static let showCalendar = prefix + "showCalendar"
         static let calendarImminentMinutes = prefix + "calendarImminentMinutes"
         static let thinMode = prefix + "thinMode"
@@ -240,6 +260,11 @@ final class Settings {
             focusMinutes: d.object(forKey: Key.focusMinutes) as? Double ?? 25,
             restMinutes: d.object(forKey: Key.restMinutes) as? Double ?? 5,
             focusNotifications: d.object(forKey: Key.focusNotifications) as? Bool ?? true,
+            focusSoundEnabled: d.object(forKey: Key.focusSoundEnabled) as? Bool ?? true,
+            focusSoundName: d.string(forKey: Key.focusSoundName) ?? "Funk",
+            focusSoundRepeatCount: d.object(forKey: Key.focusSoundRepeatCount) as? Int ?? 3,
+            focusSoundRepeatInterval: d.object(forKey: Key.focusSoundRepeatInterval) as? Double ?? 0.45,
+            focusPauseBetweenPhases: d.object(forKey: Key.focusPauseBetweenPhases) as? Bool ?? true,
             showCalendar: d.object(forKey: Key.showCalendar) as? Bool ?? false,
             calendarImminentMinutes: d.object(forKey: Key.calendarImminentMinutes) as? Double ?? 5,
             thinMode: d.object(forKey: Key.thinMode) as? Bool ?? false
@@ -280,6 +305,11 @@ final class Settings {
         d.set(focusMinutes, forKey: Key.focusMinutes)
         d.set(restMinutes, forKey: Key.restMinutes)
         d.set(focusNotifications, forKey: Key.focusNotifications)
+        d.set(focusSoundEnabled, forKey: Key.focusSoundEnabled)
+        d.set(focusSoundName, forKey: Key.focusSoundName)
+        d.set(focusSoundRepeatCount, forKey: Key.focusSoundRepeatCount)
+        d.set(focusSoundRepeatInterval, forKey: Key.focusSoundRepeatInterval)
+        d.set(focusPauseBetweenPhases, forKey: Key.focusPauseBetweenPhases)
         d.set(showCalendar, forKey: Key.showCalendar)
         d.set(calendarImminentMinutes, forKey: Key.calendarImminentMinutes)
         d.set(thinMode, forKey: Key.thinMode)
@@ -313,6 +343,11 @@ final class Settings {
             focusMinutes: focusMinutes,
             restMinutes: restMinutes,
             focusNotifications: focusNotifications,
+            focusSoundEnabled: focusSoundEnabled,
+            focusSoundName: focusSoundName,
+            focusSoundRepeatCount: focusSoundRepeatCount,
+            focusSoundRepeatInterval: focusSoundRepeatInterval,
+            focusPauseBetweenPhases: focusPauseBetweenPhases,
             showCalendar: showCalendar,
             calendarImminentMinutes: calendarImminentMinutes,
             thinMode: thinMode
@@ -346,6 +381,11 @@ final class Settings {
         focusMinutes = other.focusMinutes
         restMinutes = other.restMinutes
         focusNotifications = other.focusNotifications
+        focusSoundEnabled = other.focusSoundEnabled
+        focusSoundName = other.focusSoundName
+        focusSoundRepeatCount = other.focusSoundRepeatCount
+        focusSoundRepeatInterval = other.focusSoundRepeatInterval
+        focusPauseBetweenPhases = other.focusPauseBetweenPhases
         showCalendar = other.showCalendar
         calendarImminentMinutes = other.calendarImminentMinutes
         thinMode = other.thinMode

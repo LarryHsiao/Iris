@@ -133,10 +133,33 @@ struct SettingsView: View {
                         .font(.system(.body, design: .monospaced))
                         .frame(width: 64, alignment: .trailing)
                 }
+                Toggle("Pause until I start the next phase", isOn: $draft.focusPauseBetweenPhases)
                 Toggle("Notify on phase change", isOn: $draft.focusNotifications)
+                Toggle("Play sound on phase change", isOn: $draft.focusSoundEnabled)
+                Picker("Sound", selection: $draft.focusSoundName) {
+                    ForEach(FocusSound.available, id: \.self) { name in
+                        Text(name).tag(name)
+                    }
+                }
+                .disabled(!draft.focusSoundEnabled)
+                Stepper(value: $draft.focusSoundRepeatCount, in: 1...5, step: 1) {
+                    Text("Repeat \(draft.focusSoundRepeatCount)×")
+                }
+                .disabled(!draft.focusSoundEnabled)
+                Stepper(value: $draft.focusSoundRepeatInterval, in: 0.20...1.00, step: 0.05) {
+                    Text(String(format: "Spacing %.2fs", draft.focusSoundRepeatInterval))
+                }
+                .disabled(!draft.focusSoundEnabled)
             }
         }
         .formStyle(.grouped)
+    }
+
+    private enum FocusSound {
+        static let available: [String] = [
+            "Basso", "Blow", "Bottle", "Frog", "Funk", "Glass", "Hero",
+            "Morse", "Ping", "Pop", "Purr", "Sosumi", "Submarine", "Tink"
+        ]
     }
 
     private var detectedVolumes: [DiskMonitor.Volume] {

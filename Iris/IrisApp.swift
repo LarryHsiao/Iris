@@ -1,4 +1,5 @@
 import SwiftUI
+import UserNotifications
 
 @main
 struct IrisApp: App {
@@ -10,7 +11,7 @@ struct IrisApp: App {
 }
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
     private var overlay: OverlayWindow?
     private var menuBar: MenuBarController?
     private var settingsWindow: SettingsWindow?
@@ -31,8 +32,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var timerAir: Timer?
     private var currentTrackID: String?
     private var lyrics: SyncedLyrics?
+    private var didCheckNotificationStatus = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        UNUserNotificationCenter.current().delegate = self
         overlay = OverlayWindow(
             rootView: LyricBarView(store: store, settings: settings),
             width: settings.overlayWidth
@@ -72,6 +75,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         syncWiFiInfo()
         syncFocusSettings()
         syncCalendar()
+        verifyNotificationAuthorizationIfNeeded()
 
         audio.onBands = { [weak self] bands in
             self?.store.spectrum = bands
@@ -216,6 +220,45 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             rest: settings.restMinutes * 60
         )
         store.focus.notificationsEnabled = settings.focusNotifications
+        store.focus.soundEnabled = settings.focusSoundEnabled
+        store.focus.soundName = settings.focusSoundName
+        store.focus.soundRepeatCount = settings.focusSoundRepeatCount
+        store.focus.soundRepeatInterval = settings.focusSoundRepeatInterval
+        store.focus.pauseBetweenPhases = settings.focusPauseBetweenPhases
+        verifyNotificationAuthorizationIfNeeded()
+    }
+
+    private func verifyNotificationAuthorizationIfNeeded() {
+        guard !didCheckNotificationStatus, settings.focusNotifications else { return }
+        didCheckNotificationStatus = true
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            guard settings.authorizationStatus == .denied else { return }
+            DispatchQueue.main.async { AppDelegate.presentNotificationDeniedAlert() }
+        }
+    }
+
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .sound, .list])
+    }
+
+    static func presentNotificationDeniedAlert() {
+        let alert = NSAlert()
+        alert.messageText = "Notifications are turned off for Iris"
+        alert.informativeText = """
+            Focus phase alerts won't appear until you enable notifications for Iris.
+            Open System Settings → Notifications → Iris and allow Banners or Alerts.
+            """
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "Open Settings")
+        alert.addButton(withTitle: "Later")
+        if alert.runModal() == .alertFirstButtonReturn,
+           let url = URL(string: "x-apple.systempreferences:com.apple.preference.notifications") {
+            NSWorkspace.shared.open(url)
+        }
     }
 
     private func applyOverlayVisibility() {

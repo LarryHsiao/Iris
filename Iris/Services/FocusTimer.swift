@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import Observation
 import UserNotifications
@@ -15,10 +16,16 @@ final class FocusTimer {
     var focusDuration: TimeInterval = 25 * 60
     var restDuration: TimeInterval = 5 * 60
     var notificationsEnabled: Bool = true
+    var soundEnabled: Bool = true
+    var soundName: String = "Funk"
+    var soundRepeatCount: Int = 3
+    var soundRepeatInterval: TimeInterval = 0.45
+    var pauseBetweenPhases: Bool = true
 
     private var endDate: Date?
     private var ticker: Timer?
     private var didRequestNotifications = false
+    private var phaseEndChimes: [NSSound] = []
 
     func toggle() {
         switch mode {
@@ -121,9 +128,34 @@ final class FocusTimer {
     private func completePhase() {
         let finished = phase
         postPhaseEndNotification(finished)
+        playPhaseEndSound()
         advancePhase()
         remaining = phaseDuration()
-        endDate = Date().addingTimeInterval(remaining)
+        if pauseBetweenPhases {
+            ticker?.invalidate()
+            ticker = nil
+            mode = .idle
+            endDate = nil
+        } else {
+            endDate = Date().addingTimeInterval(remaining)
+        }
+    }
+
+    private func playPhaseEndSound() {
+        guard soundEnabled else { return }
+        let url = URL(fileURLWithPath: "/System/Library/Sounds/\(soundName).aiff")
+        let count = max(1, soundRepeatCount)
+        let interval = max(0.1, soundRepeatInterval)
+        for i in 0..<count {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * interval) { [weak self] in
+                guard let self,
+                      let sound = NSSound(contentsOf: url, byReference: true) else { return }
+                sound.volume = 1.0
+                sound.play()
+                self.phaseEndChimes.append(sound)
+                self.phaseEndChimes.removeAll { !$0.isPlaying }
+            }
+        }
     }
 
     private func postPhaseEndNotification(_ finished: Phase) {

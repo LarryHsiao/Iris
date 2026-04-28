@@ -11,6 +11,19 @@ All notable changes to Iris are documented here.
   without waiting for the first to end. Each chip's title truncates at
   78pt when paired (120pt solo) and the countdown keeps its natural
   width, so the row never spills past the overlay.
+- Focus phase-end chime: optional sound on phase change with a system-
+  sound picker (14 options), repeat count (1–5), and spacing
+  (0.20–1.00s). Each tap loads as a fresh `NSSound` from
+  `/System/Library/Sounds/` so repeats overlap rather than collapsing
+  into a single play. Gated by the master "Play sound on phase change"
+  toggle.
+- Focus pause-between-phases: when enabled (default on), the timer
+  halts at phase end and waits for you to start the next phase
+  manually instead of auto-rolling into the next focus or break.
+- Notification permission check on launch and on settings apply: if
+  Iris notifications are denied while phase-change alerts are enabled,
+  an alert points to System Settings → Notifications → Iris so the
+  alerts don't fail silently.
 
 ### Changed
 - On-call chip is now clickable: tap to bring the call's host app to
