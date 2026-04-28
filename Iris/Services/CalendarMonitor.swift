@@ -50,12 +50,12 @@ final class CalendarMonitor {
         }
     }
 
-    func nextEvent(within window: TimeInterval = 60 * 60) -> CalendarEventSample? {
-        guard authorized else { return nil }
+    func upcomingEvents(within window: TimeInterval = 4 * 60 * 60) -> (current: CalendarEventSample?, followUp: CalendarEventSample?) {
+        guard authorized else { return (nil, nil) }
         let now = Date()
         let horizon = now.addingTimeInterval(window)
         let calendars = store.calendars(for: .event)
-        guard !calendars.isEmpty else { return nil }
+        guard !calendars.isEmpty else { return (nil, nil) }
         let predicate = store.predicateForEvents(
             withStart: now.addingTimeInterval(-60 * 60 * 12),
             end: horizon,
@@ -70,12 +70,17 @@ final class CalendarMonitor {
                 }
                 return lhs.endDate < rhs.endDate
             }
-        guard let event = candidates.first else { return nil }
-        return CalendarEventSample(
+        let current = candidates.first.map(Self.sample(from:))
+        let followUp = candidates.dropFirst().first.map(Self.sample(from:))
+        return (current, followUp)
+    }
+
+    private static func sample(from event: EKEvent) -> CalendarEventSample {
+        CalendarEventSample(
             title: event.title ?? "Event",
             start: event.startDate,
             end: event.endDate,
-            joinURL: Self.extractJoinURL(from: event)
+            joinURL: extractJoinURL(from: event)
         )
     }
 

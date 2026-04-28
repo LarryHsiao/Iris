@@ -4,6 +4,19 @@ All notable changes to Iris are documented here.
 
 ## [Unreleased]
 
+### Added
+- Follow-up calendar chip: when an upcoming meeting overlaps with the
+  ongoing one or starts within the imminent window, a second chip
+  surfaces alongside the current one so its Join button is reachable
+  without waiting for the first to end. Each chip's title truncates at
+  78pt when paired (120pt solo) and the countdown keeps its natural
+  width, so the row never spills past the overlay.
+
+### Changed
+- On-call chip is now clickable: tap to bring the call's host app to
+  the front. Matched by process name against `NSRunningApplication`;
+  silently degrades to a static label if no running app matches.
+
 ## [1.7] — 2026-04-27
 
 ### Added

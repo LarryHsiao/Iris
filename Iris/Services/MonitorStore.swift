@@ -23,6 +23,7 @@ final class MonitorStore {
     var airQuality: AirQualitySample?
     var callInCall: Bool = false
     var callAppName: String?
+    var callAppProcessName: String?
     var spectrum: [Float] = Array(repeating: 0, count: AudioCapture.bandCount) {
         didSet {
             if (spectrum.max() ?? 0) > 0.01 {
@@ -38,6 +39,7 @@ final class MonitorStore {
     let focus = FocusTimer()
 
     var calendarEvent: CalendarEventSample?
+    var calendarFollowUp: CalendarEventSample?
     var now: Date = Date()
 
     var cpuHistory: [Double] = []
@@ -102,6 +104,7 @@ final class MonitorStore {
         )
         s.callInCall = true
         s.callAppName = "Teams"
+        s.callAppProcessName = "Microsoft Teams"
         s.spectrum = (0..<AudioCapture.bandCount).map { i in
             Float(0.3 + 0.7 * abs(sin(Double(i) * 0.4)))
         }

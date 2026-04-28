@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct LyricBarView: View {
@@ -181,7 +182,11 @@ struct LyricBarView: View {
                 callChip
             }
             if shouldShowCalendarBanner, let event = store.calendarEvent {
-                calendarChip(event: event)
+                let paired = shouldShowFollowUpBanner
+                calendarChip(event: event, titleMaxWidth: paired ? 78 : 120)
+                if paired, let next = store.calendarFollowUp {
+                    calendarChip(event: next, titleMaxWidth: 78)
+                }
             }
         }
     }
@@ -191,6 +196,16 @@ struct LyricBarView: View {
         if event.isOngoing { return true }
         let minutesUntilStart = event.start.timeIntervalSince(store.now) / 60
         return minutesUntilStart > 0 && minutesUntilStart <= settings.calendarImminentMinutes
+    }
+
+    private var shouldShowFollowUpBanner: Bool {
+        guard settings.showCalendar,
+              let current = store.calendarEvent,
+              current.isOngoing,
+              let next = store.calendarFollowUp else { return false }
+        let imminentLimit = store.now.addingTimeInterval(settings.calendarImminentMinutes * 60)
+        let limit = max(current.end, imminentLimit)
+        return next.start < limit
     }
 
     @ViewBuilder
@@ -470,7 +485,20 @@ struct LyricBarView: View {
         }
     }
 
+    @ViewBuilder
     private var callChip: some View {
+        if store.callAppProcessName != nil {
+            Button(action: { activateCallApp() }) {
+                callChipBody
+            }
+            .buttonStyle(.plain)
+            .help("Bring \(store.callAppName ?? "call") to the front")
+        } else {
+            callChipBody
+        }
+    }
+
+    private var callChipBody: some View {
         HStack(spacing: 3) {
             Image(systemName: "phone.fill")
                 .font(.system(size: 7, weight: .bold))
@@ -486,20 +514,31 @@ struct LyricBarView: View {
         )
     }
 
+    private func activateCallApp() {
+        guard let name = store.callAppProcessName else { return }
+        let target = name.lowercased()
+        let match = NSWorkspace.shared.runningApplications.first { app in
+            if app.localizedName?.lowercased() == target { return true }
+            if let exec = app.executableURL?.lastPathComponent.lowercased(), exec == target { return true }
+            return false
+        }
+        match?.activate()
+    }
+
     @ViewBuilder
-    private func calendarChip(event: CalendarEventSample) -> some View {
+    private func calendarChip(event: CalendarEventSample, titleMaxWidth: CGFloat) -> some View {
         if let url = event.joinURL {
             Button(action: { openURL(url) }) {
-                calendarChipBody(event: event, joinable: true)
+                calendarChipBody(event: event, joinable: true, titleMaxWidth: titleMaxWidth)
             }
             .buttonStyle(.plain)
             .help("Join \(event.title)")
         } else {
-            calendarChipBody(event: event, joinable: false)
+            calendarChipBody(event: event, joinable: false, titleMaxWidth: titleMaxWidth)
         }
     }
 
-    private func calendarChipBody(event: CalendarEventSample, joinable: Bool) -> some View {
+    private func calendarChipBody(event: CalendarEventSample, joinable: Bool, titleMaxWidth: CGFloat) -> some View {
         let label: String = {
             if event.isOngoing {
                 let minutesLeft = max(0, Int(event.end.timeIntervalSince(store.now) / 60))
@@ -511,10 +550,15 @@ struct LyricBarView: View {
         return HStack(spacing: 3) {
             Image(systemName: joinable ? "video.fill" : "calendar")
                 .font(.system(size: 7, weight: .bold))
-            Text("\(event.title) · \(label)")
+            Text(event.title)
                 .font(.system(size: 9, weight: .semibold, design: .rounded))
                 .lineLimit(1)
                 .truncationMode(.tail)
+                .frame(maxWidth: titleMaxWidth)
+            Text("· \(label)")
+                .font(.system(size: 9, weight: .semibold, design: .rounded))
+                .lineLimit(1)
+                .fixedSize()
         }
         .foregroundStyle(.white)
         .padding(.horizontal, 6)

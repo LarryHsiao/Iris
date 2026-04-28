@@ -160,6 +160,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 await MainActor.run {
                     self.store.callInCall = call.inCall
                     self.store.callAppName = call.appName
+                    self.store.callAppProcessName = call.processName
                 }
             }
         }
@@ -190,6 +191,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         calendarTimer = nil
         guard settings.showCalendar else {
             store.calendarEvent = nil
+            store.calendarFollowUp = nil
             return
         }
         Task { @MainActor in
@@ -203,7 +205,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func tickCalendar() {
         store.now = Date()
-        store.calendarEvent = calendar.nextEvent()
+        let (current, followUp) = calendar.upcomingEvents()
+        store.calendarEvent = current
+        store.calendarFollowUp = followUp
     }
 
     private func syncFocusSettings() {

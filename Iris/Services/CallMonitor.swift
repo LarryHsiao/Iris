@@ -3,8 +3,9 @@ import Foundation
 struct CallState: Equatable {
     let inCall: Bool
     let appName: String?
+    let processName: String?
 
-    static let idle = CallState(inCall: false, appName: nil)
+    static let idle = CallState(inCall: false, appName: nil, processName: nil)
 }
 
 enum CallMonitor {
@@ -83,12 +84,12 @@ enum CallMonitor {
             if callKeywords.contains(where: { lowerName.contains($0) }) {
                 let label = matchCallApp(assertion.proc) ?? assertion.proc
                 print("[CallMonitor] keyword match: \(assertion.proc) / \(assertion.kind) / \(assertion.name)")
-                return CallState(inCall: true, appName: label)
+                return CallState(inCall: true, appName: label, processName: assertion.proc)
             }
             if sleepKinds.contains(assertion.kind),
                let label = matchCallApp(assertion.proc) {
                 print("[CallMonitor] app+sleep match: \(assertion.proc) / \(assertion.kind) / \(assertion.name)")
-                return CallState(inCall: true, appName: label)
+                return CallState(inCall: true, appName: label, processName: assertion.proc)
             }
             if assertion.proc == "coreaudiod",
                assertion.name.contains("input.context"),
@@ -96,7 +97,7 @@ enum CallMonitor {
                let ownerName = processName(pid: ownerPid) {
                 let label = matchCallApp(ownerName) ?? ownerName
                 print("[CallMonitor] mic-in-use by \(ownerName) → \(label)")
-                return CallState(inCall: true, appName: label)
+                return CallState(inCall: true, appName: label, processName: ownerName)
             }
         }
 
