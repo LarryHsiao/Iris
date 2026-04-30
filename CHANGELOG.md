@@ -4,6 +4,8 @@ All notable changes to Iris are documented here.
 
 ## [Unreleased]
 
+## [1.8.0] — 2026-04-30
+
 ### Added
 - Claude-thinking tile: a rotating sparkle joins the tile row while any
   Claude Code session is mid-turn, with elapsed seconds beneath. Driven
