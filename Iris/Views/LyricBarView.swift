@@ -212,6 +212,8 @@ struct LyricBarView: View {
     private func tileView(for tile: Tile) -> some View {
         if tile == .calendar {
             calendarTileButton
+        } else if tile == .claude {
+            claudeTileGate
         } else if LyricBarView.expandable(tile) {
             Button(action: { toggleExpansion(for: tile) }) {
                 baseTile(for: tile)
@@ -231,6 +233,13 @@ struct LyricBarView: View {
                     .opacity(store.expandedTile == .calendar ? 0.55 : 1)
             }
             .buttonStyle(.plain)
+        }
+    }
+
+    @ViewBuilder
+    private var claudeTileGate: some View {
+        if store.claudeState.isActive {
+            ClaudeTile(state: store.claudeState, showLabel: !settings.thinMode)
         }
     }
 
@@ -417,6 +426,7 @@ struct LyricBarView: View {
         case .air: AirTile(sample: store.airQuality, showLabel: !settings.thinMode)
         case .focus: FocusTile(timer: store.focus, showLabel: !settings.thinMode)
         case .calendar: EmptyView()
+        case .claude: EmptyView()
         }
     }
 
@@ -467,7 +477,7 @@ struct LyricBarView: View {
     private static func expandable(_ tile: Tile) -> Bool {
         switch tile {
         case .cpu, .gpu, .mem, .network, .calendar, .disk, .weather: return true
-        case .battery, .air, .focus: return false
+        case .battery, .air, .focus, .claude: return false
         }
     }
 

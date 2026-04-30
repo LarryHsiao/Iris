@@ -4,6 +4,19 @@ All notable changes to Iris are documented here.
 
 ## [Unreleased]
 
+### Added
+- Claude-thinking tile: a rotating sparkle joins the tile row while any
+  Claude Code session is mid-turn, with elapsed seconds beneath. Driven
+  by two hook scripts (`iris-claude-on.sh` / `iris-claude-off.sh`) that
+  drop marker files into `~/.claude/iris-status/`; Iris polls and shows
+  the tile while any marker is present. Off by default; opt in under
+  Settings → Content → Claude. One-click installer copies the bundled
+  scripts into `<root>/hooks/` and patches `<root>/settings.json`,
+  preserving existing hook entries and writing a timestamped backup
+  first. Custom config root supported (e.g. `~/.claude-personal`). Stale
+  markers older than three minutes are swept, so a missed `Stop` hook
+  will not leave the tile stuck on.
+
 ## [1.7.1] — 2026-04-28
 
 ### Added

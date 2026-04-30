@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct SettingsView: View {
     @Bindable var live: Settings
@@ -8,6 +9,10 @@ struct SettingsView: View {
     var onApplyError: (Error) -> Void
 
     @State private var draft: Settings
+    @State private var showClaudeHelp: Bool = false
+    @State private var claudeHookStatus: ClaudeHookInstaller.Status = .notInstalled
+    @State private var claudeHookBusy: Bool = false
+    @State private var claudeHookManualOpen: Bool = false
 
     init(
         live: Settings,
@@ -64,6 +69,28 @@ struct SettingsView: View {
             Section("Call") {
                 Toggle("Show on-call label", isOn: $draft.showCall)
             }
+            Section("Claude") {
+                HStack {
+                    Toggle("Show Claude-thinking tile", isOn: $draft.showClaude)
+                    Spacer()
+                    Button {
+                        showClaudeHelp = true
+                    } label: {
+                        Image(systemName: "info.circle")
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Hook setup")
+                    .popover(isPresented: $showClaudeHelp, arrowEdge: .trailing) {
+                        claudeHookHelp
+                    }
+                }
+                if draft.showClaude {
+                    Text("A sparkle tile lights while any Claude Code session is mid-turn. Requires the iris-claude hooks — click ⓘ for setup.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
             Section("Weather") {
                 Picker("Units", selection: $draft.weatherUnit) {
                     ForEach(WeatherUnit.allCases) { unit in
@@ -104,6 +131,154 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
+    }
+
+    private static let claudeHookSnippet = """
+"UserPromptSubmit": [{ "hooks": [{ "type":"command",
+  "command":"~/.claude/hooks/iris-claude-on.sh" }] }],
+"PreToolUse":  [{ "hooks": [{ "type":"command",
+  "command":"~/.claude/hooks/iris-claude-on.sh" }] }],
+"PostToolUse": [{ "hooks": [{ "type":"command",
+  "command":"~/.claude/hooks/iris-claude-on.sh" }] }],
+"Stop":        [{ "hooks": [{ "type":"command",
+  "command":"~/.claude/hooks/iris-claude-off.sh" }] }]
+"""
+
+    private var claudeHookHelp: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Claude indicator setup")
+                .font(.headline)
+            Text("Iris polls `~/.claude/iris-status/`. Two hook scripts maintain that directory on each Claude Code turn boundary.")
+                .font(.system(size: 11))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            HStack(spacing: 8) {
+                Button(action: runClaudeHookInstall) {
+                    if claudeHookBusy {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Text(claudeHookStatus == .installed ? "Reinstall hooks" : "Install hooks")
+                    }
+                }
+                .disabled(claudeHookBusy)
+                .keyboardShortcut(.defaultAction)
+                Button("Change path…", action: pickClaudeHooksRoot)
+                    .disabled(claudeHookBusy)
+                claudeHookStatusBadge
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Root: \(claudeHooksRootDisplay)")
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                Text("Installs two scripts into `<root>/hooks/` and patches `<root>/settings.json`. Existing hooks are preserved; safe to re-run. A timestamped backup of `settings.json` is written first.")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                Button {
+                    claudeHookManualOpen.toggle()
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: claudeHookManualOpen ? "chevron.down" : "chevron.right")
+                            .font(.system(size: 9, weight: .semibold))
+                        Text("Manual setup")
+                            .font(.system(size: 11, weight: .semibold))
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+
+                if claudeHookManualOpen {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("If you'd rather wire it by hand, place the bundled scripts at `~/.claude/hooks/iris-claude-{on,off}.sh` and add this to `~/.claude/settings.json`:")
+                            .font(.system(size: 10))
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text(Self.claudeHookSnippet)
+                            .font(.system(size: 10, design: .monospaced))
+                            .padding(6)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.black.opacity(0.06))
+                            .cornerRadius(4)
+                            .textSelection(.enabled)
+                    }
+                }
+            }
+        }
+        .padding(14)
+        .frame(width: 380)
+        .onAppear {
+            claudeHookStatus = ClaudeHookInstaller.currentStatus(rootRaw: draft.claudeHooksRoot)
+        }
+    }
+
+    @ViewBuilder
+    private var claudeHookStatusBadge: some View {
+        switch claudeHookStatus {
+        case .notInstalled:
+            Label("Not installed", systemImage: "circle.dashed")
+                .font(.system(size: 11))
+                .foregroundStyle(.secondary)
+        case .installed:
+            Label("Installed", systemImage: "checkmark.circle.fill")
+                .font(.system(size: 11))
+                .foregroundStyle(.green)
+        case .partial(let message):
+            Label(message, systemImage: "exclamationmark.triangle.fill")
+                .font(.system(size: 11))
+                .foregroundStyle(.orange)
+        case .failed(let message):
+            Label(message, systemImage: "xmark.octagon.fill")
+                .font(.system(size: 11))
+                .foregroundStyle(.red)
+                .lineLimit(2)
+        }
+    }
+
+    private func runClaudeHookInstall() {
+        claudeHookBusy = true
+        let rootRaw = draft.claudeHooksRoot
+        Task.detached {
+            let result = ClaudeHookInstaller.install(rootRaw: rootRaw)
+            await MainActor.run {
+                claudeHookStatus = result
+                claudeHookBusy = false
+                if result == .installed {
+                    draft.showClaude = true
+                }
+            }
+        }
+    }
+
+    private func pickClaudeHooksRoot() {
+        let panel = NSOpenPanel()
+        panel.title = "Choose Claude config root"
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.allowsMultipleSelection = false
+        panel.canCreateDirectories = true
+        let resolved = ClaudeHookInstaller.resolveRoot(draft.claudeHooksRoot)
+        if FileManager.default.fileExists(atPath: resolved.path) {
+            panel.directoryURL = resolved
+        }
+        if panel.runModal() == .OK, let url = panel.url {
+            draft.claudeHooksRoot = ClaudeHookInstaller.displayPath(for: url)
+            claudeHookStatus = ClaudeHookInstaller.currentStatus(rootRaw: draft.claudeHooksRoot)
+        }
+    }
+
+    private var claudeHooksRootDisplay: String {
+        let raw = draft.claudeHooksRoot
+        if raw.isEmpty { return "~/.claude" }
+        return raw
     }
 
     private var tilesForm: some View {
@@ -357,6 +532,8 @@ private struct TilePreview: View {
                     .font(.system(size: 14))
                     .foregroundStyle(.white.opacity(0.6))
             }
+        case .claude:
+            ClaudeTile(state: store.claudeState)
         }
     }
 

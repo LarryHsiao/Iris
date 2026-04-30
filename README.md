@@ -18,6 +18,7 @@ A lightweight, always-on-top HUD for macOS — live system vitals and synced son
 - **Weather tile** — current condition icon plus temperature, fetched from Open-Meteo with IP-based geolocation (no permission, no API key).
 - **Audio spectrum visualizer** — live FFT of the system audio output, rendered as bars that can sit above, below, or behind the lyric bar. Volume-scaled and fades out when playback is silent. First use prompts for Screen Recording access.
 - **On-call banner** — a compact chip lights up when you're in a call on Teams, Zoom, Slack, Discord, Webex, FaceTime, Skype, LINE, or Google Meet. No private APIs.
+- **Claude-thinking tile** — a rotating sparkle joins the tile row while any Claude Code session is mid-turn, with the elapsed seconds beneath it; vanishes when no session is live. Opt-in; needs the hook scripts shipped under `Iris/Scripts/claude-hooks/` (see below).
 - **Draggable overlay** — float it anywhere on screen; position is saved and restored across launches.
 - **Menu-bar control** — toggle visibility or open Settings via the `ʟ` status item.
 
@@ -48,6 +49,27 @@ xattr -rd com.apple.quarantine /Applications/Iris.app
 ## Build
 
 Open `Iris.xcodeproj` in Xcode and run the `Iris` scheme.
+
+## Claude indicator (optional)
+
+Iris can show a rotating sparkle tile while any Claude Code session is mid-turn. The signal comes from two hook scripts that write a marker file to `~/.claude/iris-status/` on each turn boundary; Iris polls that directory and shows the tile while any marker is present.
+
+**One-click install:** open Iris → Settings → Content → Claude, click the ⓘ next to **Show Claude-thinking tile**, then **Install hooks**. Iris copies the bundled scripts into `~/.claude/hooks/` and patches `~/.claude/settings.json`, preserving any existing hook entries. A timestamped backup of `settings.json` is written first. The toggle flips on automatically when the install succeeds.
+
+**Manual install** (if you'd rather not have the app touch your config): place the two scripts shipped under `Iris/Scripts/claude-hooks/` (or pulled out of `Iris.app/Contents/Resources/`) at `~/.claude/hooks/iris-claude-on.sh` and `~/.claude/hooks/iris-claude-off.sh`, mark them executable, and add the following under `~/.claude/settings.json`'s `hooks` block:
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "~/.claude/hooks/iris-claude-on.sh" }] }],
+    "PreToolUse":       [{ "hooks": [{ "type": "command", "command": "~/.claude/hooks/iris-claude-on.sh" }] }],
+    "PostToolUse":      [{ "hooks": [{ "type": "command", "command": "~/.claude/hooks/iris-claude-on.sh" }] }],
+    "Stop":             [{ "hooks": [{ "type": "command", "command": "~/.claude/hooks/iris-claude-off.sh" }] }]
+  }
+}
+```
+
+Then toggle **Show Claude-thinking tile** on. The tile vanishes when no marker is present. Iris also sweeps any marker older than three minutes, so a missed `Stop` hook will not leave a tile stuck on.
 
 ## License
 

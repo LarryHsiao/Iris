@@ -169,6 +169,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
                     self.store.callAppProcessName = call.processName
                 }
             }
+            Task.detached(priority: .utility) {
+                let claude = ClaudeMonitor.sample()
+                await MainActor.run {
+                    self.store.claudeState = claude
+                }
+            }
         }
     }
 

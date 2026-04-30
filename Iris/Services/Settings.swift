@@ -29,7 +29,7 @@ enum WeatherUnit: String, CaseIterable, Identifiable, Hashable {
 }
 
 enum Tile: String, CaseIterable, Identifiable, Hashable {
-    case network, cpu, gpu, mem, disk, battery, weather, air, focus, calendar
+    case network, cpu, gpu, mem, disk, battery, weather, air, focus, calendar, claude
 
     var id: String { rawValue }
 
@@ -45,10 +45,11 @@ enum Tile: String, CaseIterable, Identifiable, Hashable {
         case .air: return "Air Quality"
         case .focus: return "Focus"
         case .calendar: return "Calendar"
+        case .claude: return "Claude"
         }
     }
 
-    static let defaultOrder: [Tile] = [.network, .cpu, .gpu, .mem, .disk, .battery, .weather, .air, .focus, .calendar]
+    static let defaultOrder: [Tile] = [.network, .cpu, .gpu, .mem, .disk, .battery, .weather, .air, .focus, .calendar, .claude]
 }
 
 @Observable
@@ -87,6 +88,8 @@ final class Settings {
     var showCalendar: Bool
     var calendarImminentMinutes: Double
     var thinMode: Bool
+    var showClaude: Bool
+    var claudeHooksRoot: String
 
     var onApplied: (() -> Void)?
 
@@ -126,7 +129,9 @@ final class Settings {
         focusPauseBetweenPhases: Bool,
         showCalendar: Bool,
         calendarImminentMinutes: Double,
-        thinMode: Bool
+        thinMode: Bool,
+        showClaude: Bool,
+        claudeHooksRoot: String
     ) {
         self.showLyrics = showLyrics
         self.showArtwork = showArtwork
@@ -162,6 +167,8 @@ final class Settings {
         self.showCalendar = showCalendar
         self.calendarImminentMinutes = calendarImminentMinutes
         self.thinMode = thinMode
+        self.showClaude = showClaude
+        self.claudeHooksRoot = claudeHooksRoot
     }
 
     func isVisible(_ tile: Tile) -> Bool {
@@ -176,6 +183,7 @@ final class Settings {
         case .air: return showAir
         case .focus: return showFocus
         case .calendar: return showCalendar
+        case .claude: return showClaude
         }
     }
 
@@ -191,6 +199,7 @@ final class Settings {
         case .air: showAir = value
         case .focus: showFocus = value
         case .calendar: showCalendar = value
+        case .claude: showClaude = value
         }
     }
 
@@ -229,6 +238,8 @@ final class Settings {
         static let showCalendar = prefix + "showCalendar"
         static let calendarImminentMinutes = prefix + "calendarImminentMinutes"
         static let thinMode = prefix + "thinMode"
+        static let showClaude = prefix + "showClaude"
+        static let claudeHooksRoot = prefix + "claudeHooksRoot"
     }
 
     static func load() -> Settings {
@@ -267,7 +278,9 @@ final class Settings {
             focusPauseBetweenPhases: d.object(forKey: Key.focusPauseBetweenPhases) as? Bool ?? true,
             showCalendar: d.object(forKey: Key.showCalendar) as? Bool ?? false,
             calendarImminentMinutes: d.object(forKey: Key.calendarImminentMinutes) as? Double ?? 5,
-            thinMode: d.object(forKey: Key.thinMode) as? Bool ?? false
+            thinMode: d.object(forKey: Key.thinMode) as? Bool ?? false,
+            showClaude: d.object(forKey: Key.showClaude) as? Bool ?? false,
+            claudeHooksRoot: d.string(forKey: Key.claudeHooksRoot) ?? "~/.claude"
         )
     }
 
@@ -313,6 +326,8 @@ final class Settings {
         d.set(showCalendar, forKey: Key.showCalendar)
         d.set(calendarImminentMinutes, forKey: Key.calendarImminentMinutes)
         d.set(thinMode, forKey: Key.thinMode)
+        d.set(showClaude, forKey: Key.showClaude)
+        d.set(claudeHooksRoot, forKey: Key.claudeHooksRoot)
     }
 
     func copy() -> Settings {
@@ -350,7 +365,9 @@ final class Settings {
             focusPauseBetweenPhases: focusPauseBetweenPhases,
             showCalendar: showCalendar,
             calendarImminentMinutes: calendarImminentMinutes,
-            thinMode: thinMode
+            thinMode: thinMode,
+            showClaude: showClaude,
+            claudeHooksRoot: claudeHooksRoot
         )
     }
 
@@ -389,6 +406,8 @@ final class Settings {
         showCalendar = other.showCalendar
         calendarImminentMinutes = other.calendarImminentMinutes
         thinMode = other.thinMode
+        showClaude = other.showClaude
+        claudeHooksRoot = other.claudeHooksRoot
     }
 
 }
