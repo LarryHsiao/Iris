@@ -73,22 +73,11 @@ enum CallMonitor {
             }
         }
 
-        let sleepKinds: Set<String> = [
-            "PreventUserIdleDisplaySleep",
-            "PreventUserIdleSystemSleep",
-            "PreventSystemSleep"
-        ]
-
         for (index, assertion) in assertions.enumerated() {
             let lowerName = assertion.name.lowercased()
             if callKeywords.contains(where: { lowerName.contains($0) }) {
                 let label = matchCallApp(assertion.proc) ?? assertion.proc
                 print("[CallMonitor] keyword match: \(assertion.proc) / \(assertion.kind) / \(assertion.name)")
-                return CallState(inCall: true, appName: label, processName: assertion.proc)
-            }
-            if sleepKinds.contains(assertion.kind),
-               let label = matchCallApp(assertion.proc) {
-                print("[CallMonitor] app+sleep match: \(assertion.proc) / \(assertion.kind) / \(assertion.name)")
                 return CallState(inCall: true, appName: label, processName: assertion.proc)
             }
             if assertion.proc == "coreaudiod",
