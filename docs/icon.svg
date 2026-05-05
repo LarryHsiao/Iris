@@ -1,63 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
-  <defs>
-    <radialGradient id="bg" cx="50%" cy="40%" r="65%">
-      <stop offset="0%" stop-color="#1a1f2e"/>
-      <stop offset="100%" stop-color="#0a0d14"/>
-    </radialGradient>
-    <radialGradient id="irisGrad" cx="50%" cy="45%" r="55%">
-      <stop offset="0%" stop-color="#4fc3f7"/>
-      <stop offset="40%" stop-color="#1565c0"/>
-      <stop offset="100%" stop-color="#0d2a6e"/>
-    </radialGradient>
-    <radialGradient id="pupilGrad" cx="50%" cy="45%" r="50%">
-      <stop offset="0%" stop-color="#1a1f2e"/>
-      <stop offset="100%" stop-color="#060810"/>
-    </radialGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="softglow">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-
   <!-- Background -->
-  <rect width="1024" height="1024" rx="224" ry="224" fill="url(#bg)"/>
+  <rect width="1024" height="1024" rx="224" ry="224" fill="#0F1F2E"/>
 
   <!-- Outer ring track -->
-  <circle cx="512" cy="512" r="380" fill="none" stroke="#ffffff0f" stroke-width="18"/>
-  <!-- CPU arc ~75% -->
-  <circle cx="512" cy="512" r="380" fill="none"
-    stroke="#61c8ff" stroke-width="18" stroke-linecap="round"
-    stroke-dasharray="1795 2387" stroke-dashoffset="596"
-    opacity="0.85" filter="url(#glow)"/>
+  <circle cx="512" cy="512" r="400" fill="none"
+    stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="32"/>
 
-  <!-- Middle ring track -->
-  <circle cx="512" cy="512" r="320" fill="none" stroke="#ffffff0f" stroke-width="14"/>
-  <!-- MEM arc ~55% -->
-  <circle cx="512" cy="512" r="320" fill="none"
-    stroke="#ffb74d" stroke-width="14" stroke-linecap="round"
-    stroke-dasharray="1105 2010" stroke-dashoffset="502"
-    opacity="0.8" filter="url(#glow)"/>
+  <!-- Outer arc ~75% (CPU echo) -->
+  <circle cx="512" cy="512" r="400" fill="none"
+    stroke="#4FC3F7" stroke-width="32" stroke-linecap="round"
+    stroke-dasharray="1885 628"
+    transform="rotate(-90 512 512)"/>
 
-  <!-- Outer circle (replaces eye shape) -->
-  <circle cx="512" cy="512" r="210" fill="#0d1526" opacity="0.95"/>
-  <circle cx="512" cy="512" r="210" fill="none" stroke="#e8f4fd" stroke-width="6" opacity="0.9"/>
+  <!-- Inner ring track -->
+  <circle cx="512" cy="512" r="280" fill="none"
+    stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="28"/>
 
-  <!-- Iris -->
-  <circle cx="512" cy="512" r="130" fill="url(#irisGrad)"/>
+  <!-- Inner arc ~55% (MEM echo) -->
+  <circle cx="512" cy="512" r="280" fill="none"
+    stroke="#FFB74D" stroke-width="28" stroke-linecap="round"
+    stroke-dasharray="967 792"
+    transform="rotate(-90 512 512)"/>
 
-  <!-- Iris texture rings -->
-  <circle cx="512" cy="512" r="115" fill="none" stroke="#ffffff18" stroke-width="2"/>
-  <circle cx="512" cy="512" r="98"  fill="none" stroke="#ffffff14" stroke-width="1.5"/>
-  <circle cx="512" cy="512" r="82"  fill="none" stroke="#ffffff10" stroke-width="1.5"/>
-
-  <!-- Pupil -->
-  <circle cx="512" cy="512" r="58" fill="url(#pupilGrad)"/>
-  <circle cx="512" cy="512" r="58" fill="none" stroke="#61c8ff" stroke-width="2.5" opacity="0.6" filter="url(#softglow)"/>
-
-  <!-- Specular highlight -->
-  <ellipse cx="476" cy="476" rx="24" ry="15" fill="white" opacity="0.45" transform="rotate(-25 476 476)"/>
+  <!-- Center dot -->
+  <circle cx="512" cy="512" r="110" fill="#E8F4FD"/>
 </svg>
