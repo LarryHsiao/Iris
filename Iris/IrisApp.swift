@@ -35,6 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     private var didCheckNotificationStatus = false
     private var missingTrackTicks = 0
     private var isTickingTrack = false
+    private var isSamplingSystem = false
     private static let missingTrackThreshold = 3
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -147,21 +148,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             withTimeInterval: settings.samplingInterval,
             repeats: true
         ) { [weak self] _ in
-            guard let self else { return }
+            guard let self, !self.isSamplingSystem else { return }
+            self.isSamplingSystem = true
             self.store.cpuPercent = self.cpu.sample()
-            self.store.memPercent = MemoryMonitor.sample()
-            self.store.disks = DiskMonitor.sample(
-                enabledExternalIDs: self.settings.enabledExternalDiskIDs
-            )
-            self.store.gpuPercent = GPUMonitor.sample()
             let net = self.net.sample()
             self.store.netRxBytesPerSec = net.rxBytesPerSec
             self.store.netTxBytesPerSec = net.txBytesPerSec
-            let battery = BatteryMonitor.sample()
-            self.store.batteryPercent = battery.percent
-            self.store.batteryCharging = battery.isCharging
-            self.store.batteryPresent = battery.isPresent
-            self.store.recordSystemSample()
+            let enabledIDs = self.settings.enabledExternalDiskIDs
+            Task.detached(priority: .utility) {
+                let mem = MemoryMonitor.sample()
+                let disks = DiskMonitor.sample(enabledExternalIDs: enabledIDs)
+                let gpu = GPUMonitor.sample()
+                let battery = BatteryMonitor.sample()
+                await MainActor.run {
+                    self.store.memPercent = mem
+                    self.store.disks = disks
+                    self.store.gpuPercent = gpu
+                    self.store.batteryPercent = battery.percent
+                    self.store.batteryCharging = battery.isCharging
+                    self.store.batteryPresent = battery.isPresent
+                    self.store.recordSystemSample()
+                    self.isSamplingSystem = false
+                }
+            }
             Task.detached(priority: .utility) {
                 let call = CallMonitor.sample()
                 await MainActor.run {
