@@ -34,6 +34,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     private var lyrics: SyncedLyrics?
     private var didCheckNotificationStatus = false
     private var missingTrackTicks = 0
+    private var isTickingTrack = false
     private static let missingTrackThreshold = 3
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -307,6 +308,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     }
 
     private func tickTrack() async {
+        guard !isTickingTrack else { return }
+        isTickingTrack = true
+        defer { isTickingTrack = false }
         let track = await Task.detached { SpotifyClient.currentTrack() }.value
         guard let track else {
             missingTrackTicks += 1

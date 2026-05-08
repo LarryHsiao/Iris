@@ -70,14 +70,16 @@ enum SpotifyClient {
         task.arguments = ["-e", source]
         let pipe = Pipe()
         task.standardOutput = pipe
-        task.standardError = Pipe()
+        task.standardError = FileHandle.nullDevice
         do {
             try task.run()
-            task.waitUntilExit()
         } catch {
             return nil
         }
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        let handle = pipe.fileHandleForReading
+        let data = handle.readDataToEndOfFile()
+        try? handle.close()
+        task.waitUntilExit()
         return String(data: data, encoding: .utf8)?
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }

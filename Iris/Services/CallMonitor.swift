@@ -120,13 +120,15 @@ enum CallMonitor {
         task.arguments = arguments
         let pipe = Pipe()
         task.standardOutput = pipe
-        task.standardError = Pipe()
+        task.standardError = FileHandle.nullDevice
         do {
             try task.run()
         } catch {
             return nil
         }
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        let handle = pipe.fileHandleForReading
+        let data = handle.readDataToEndOfFile()
+        try? handle.close()
         task.waitUntilExit()
         return String(data: data, encoding: .utf8)
     }
