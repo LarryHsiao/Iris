@@ -229,7 +229,12 @@ struct LyricBarView: View {
     private var calendarTileButton: some View {
         if store.hasTrack, let event = store.calendarEvent {
             Button(action: { toggleExpansion(for: .calendar) }) {
-                CalendarTile(event: event, now: store.now, showLabel: !settings.thinMode)
+                CalendarTile(
+                    event: event,
+                    now: store.now,
+                    showLabel: !settings.thinMode,
+                    imminentMinutes: settings.calendarImminentMinutes
+                )
                     .opacity(store.expandedTile == .calendar ? 0.55 : 1)
             }
             .buttonStyle(.plain)

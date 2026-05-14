@@ -16,9 +16,16 @@ A lightweight, always-on-top HUD for macOS — live system vitals and synced son
 - **System ring gauges** — CPU, GPU, and memory usage as compact ring indicators; network shows live up/down throughput; battery shows charge and charging state.
 - **Disk dot gauge** — free space rendered as a phyllotactic disc of dots, filled center-outward; green when healthy, yellow under 20%, red under 5%. Multiple volumes can be monitored side by side (system by default; others opt-in via Settings).
 - **Weather tile** — current condition icon plus temperature, fetched from Open-Meteo with IP-based geolocation (no permission, no API key).
+- **Air-quality tile** — current European AQI from Open-Meteo, banded from green through amber to deep red and violet at the hazardous end; expanding the tile reveals PM2.5, PM10, and grass/tree/weed pollen.
+- **Upcoming-meeting tile** — reads your Calendar for the next event and shows a countdown ring that shifts colour with urgency: slate-blue while the meeting is far off, yellow once inside the imminent window's double, red and pulsing once inside the imminent window itself, then green while the meeting is in session. The imminent window is the **Imminent banner at** slider under Settings → Calendar (1–30 min, default 5). Expanding the tile reveals a **Join** button when the event carries a Teams, Zoom, Google Meet, or Webex link. Opt-in; needs Calendar access.
+- **Focus / Pomodoro tile** — click-to-start work and break phases with configurable durations; optional notification and sound on phase change.
 - **Audio spectrum visualizer** — live FFT of the system audio output, rendered as bars that can sit above, below, or behind the lyric bar. Volume-scaled and fades out when playback is silent. First use prompts for Screen Recording access.
 - **On-call banner** — a compact chip lights up when you're in a call on Teams, Zoom, Slack, Discord, Webex, FaceTime, Skype, LINE, or Google Meet. No private APIs.
 - **Claude-thinking tile** — a rotating sparkle joins the tile row while any Claude Code session is mid-turn, with the elapsed seconds beneath it; vanishes when no session is live. Opt-in; needs the hook scripts shipped under `Iris/Scripts/claude-hooks/` (see below).
+- **Wi-Fi name & public IP** — opt-in row in the expanded network panel showing the current SSID and egress IP. SSID needs Location permission; the IP is fetched from `api.ipify.org`.
+- **Auto-hide on fullscreen** — overlay quietly steps aside when a fullscreen app takes the screen, and returns when you leave fullscreen.
+- **Launch at login** — toggle in Settings to start Iris with the system.
+- **Thin mode** — collapses tile labels for a narrower bar when screen real estate is dear.
 - **Draggable overlay** — float it anywhere on screen; position is saved and restored across launches.
 - **Menu-bar control** — toggle visibility or open Settings via the `ʟ` status item.
 

@@ -4,21 +4,28 @@ struct CalendarTile: View {
     let event: CalendarEventSample
     let now: Date
     var showLabel: Bool = true
+    var imminentMinutes: Double = 5
+
+    private var soonThresholdMinutes: Double { imminentMinutes * 2 }
+    private var imminentThresholdMinutes: Double { imminentMinutes }
 
     var body: some View {
         VStack(spacing: 1) {
-            ZStack {
-                Circle()
-                    .stroke(Color.white.opacity(0.18), lineWidth: 3)
-                Circle()
-                    .trim(from: 0, to: progress)
-                    .stroke(tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-                Image(systemName: "calendar")
-                    .font(.system(size: 9, weight: .semibold))
-                    .foregroundStyle(.white)
+            TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: !isImminent)) { context in
+                ZStack {
+                    Circle()
+                        .stroke(Color.white.opacity(0.18), lineWidth: 3)
+                    Circle()
+                        .trim(from: 0, to: progress)
+                        .stroke(tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                        .rotationEffect(.degrees(-90))
+                        .opacity(pulseOpacity(at: context.date))
+                    Image(systemName: "calendar")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(.white)
+                }
+                .frame(width: 22, height: 22)
             }
-            .frame(width: 22, height: 22)
             if showLabel {
                 Text(countdownLabel)
                     .font(.system(size: 7, weight: .medium))
@@ -39,10 +46,34 @@ struct CalendarTile: View {
         return max(0, min(1, 1 - remaining / horizon))
     }
 
+    private var minutesUntilStart: Double {
+        event.start.timeIntervalSince(now) / 60
+    }
+
+    private var isImminent: Bool {
+        !event.isOngoing
+            && minutesUntilStart > 0
+            && minutesUntilStart <= imminentThresholdMinutes
+    }
+
     private var tint: Color {
-        event.isOngoing
-            ? Color(red: 0.38, green: 0.85, blue: 0.55)
-            : Color(red: 0.95, green: 0.72, blue: 0.32)
+        if event.isOngoing {
+            return Color(red: 0.38, green: 0.85, blue: 0.55)
+        }
+        let m = minutesUntilStart
+        if m <= imminentThresholdMinutes {
+            return Color(red: 0.96, green: 0.40, blue: 0.28)
+        }
+        if m <= soonThresholdMinutes {
+            return Color(red: 0.98, green: 0.85, blue: 0.20)
+        }
+        return Color(red: 0.55, green: 0.68, blue: 0.85)
+    }
+
+    private func pulseOpacity(at date: Date) -> Double {
+        guard isImminent else { return 1.0 }
+        let phase = sin(date.timeIntervalSinceReferenceDate * 2 * .pi)
+        return 0.55 + 0.45 * (phase * 0.5 + 0.5)
     }
 
     private var countdownLabel: String {
