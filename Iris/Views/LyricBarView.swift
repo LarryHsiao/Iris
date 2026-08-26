@@ -307,20 +307,13 @@ struct LyricBarView: View {
     private var diskExpandedRow: some View {
         VStack(alignment: .leading, spacing: 1) {
             ForEach(store.disks) { volume in
-                Text("\(Self.byteFormatter.string(fromByteCount: volume.freeBytes)) · \(volume.name)")
+                Text("\(DiskDotsGauge.freeSpaceLabel(bytes: volume.freeBytes)) · \(volume.name)")
                     .font(.system(size: 11, weight: .semibold, design: .rounded))
                     .foregroundStyle(.white.opacity(0.9))
                     .lineLimit(1)
             }
         }
     }
-
-    private static let byteFormatter: ByteCountFormatter = {
-        let f = ByteCountFormatter()
-        f.countStyle = .file
-        f.allowedUnits = [.useGB, .useTB, .useMB]
-        return f
-    }()
 
     private func calendarExpandedRow(event: CalendarEventSample) -> some View {
         VStack(alignment: .leading, spacing: 1) {
@@ -611,7 +604,7 @@ struct LyricBarView: View {
             ForEach(store.disks) { volume in
                 DiskDotsGauge(
                     volume: volume,
-                    showLabel: store.disks.count > 1 && !settings.thinMode,
+                    showLabel: !settings.thinMode,
                     reserveLabelSpace: !settings.thinMode
                 )
             }

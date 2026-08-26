@@ -37,6 +37,29 @@ struct DiskDotsGauge: View {
         return Color(red: 0.38, green: 0.86, blue: 0.46)
     }
 
+    private static let units: [(divisor: Double, suffix: String)] = [
+        (1_000_000_000_000, "TB"),
+        (1_000_000_000, "GB"),
+        (1_000_000, "MB"),
+    ]
+
+    static func freeSpaceLabel(bytes: Int64) -> String {
+        for (index, unit) in units.enumerated() where Double(bytes) >= unit.divisor {
+            let rounded = (Double(bytes) / unit.divisor).rounded()
+            if rounded >= 1000, index > 0 {
+                let larger = units[index - 1]
+                let biggerValue = Int((Double(bytes) / larger.divisor).rounded())
+                return "\(biggerValue) \(larger.suffix)"
+            }
+            return "\(Int(rounded)) \(unit.suffix)"
+        }
+        return "\(bytes) B"
+    }
+
+    private var freeSpaceText: String {
+        Self.freeSpaceLabel(bytes: volume.freeBytes)
+    }
+
     var body: some View {
         VStack(spacing: 1) {
             ZStack {
@@ -49,13 +72,11 @@ struct DiskDotsGauge: View {
             }
             .frame(width: Self.gridSize, height: Self.gridSize)
             if showLabel {
-                Image(systemName: volume.isSystem
-                      ? "internaldrive.fill"
-                      : "externaldrive.fill")
+                Text(freeSpaceText)
                     .font(.system(size: 7, weight: .medium))
                     .foregroundStyle(.white.opacity(0.6))
             } else if reserveLabelSpace {
-                Image(systemName: "internaldrive.fill")
+                Text(freeSpaceText)
                     .font(.system(size: 7, weight: .medium))
                     .hidden()
             }
