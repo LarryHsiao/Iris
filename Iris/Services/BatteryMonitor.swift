@@ -1,7 +1,7 @@
 import Foundation
 import IOKit.ps
 
-enum BatteryMonitor {
+nonisolated enum BatteryMonitor {
     struct State {
         let percent: Double
         let isCharging: Bool

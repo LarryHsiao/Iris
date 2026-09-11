@@ -11,7 +11,7 @@ struct SpotifyTrack: Equatable {
     let isPlaying: Bool
 }
 
-enum SpotifyClient {
+nonisolated enum SpotifyClient {
     private static let bundleID = "com.spotify.client"
 
     private static func isRunning() -> Bool {

@@ -1,7 +1,7 @@
 import Foundation
 import DiskArbitration
 
-enum DiskMonitor {
+nonisolated enum DiskMonitor {
     struct Volume: Identifiable, Equatable {
         let id: String
         let name: String

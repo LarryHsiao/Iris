@@ -1,7 +1,7 @@
 import Foundation
 import IOKit
 
-enum GPUMonitor {
+nonisolated enum GPUMonitor {
     static func sample() -> Double {
         var iterator: io_iterator_t = 0
         let match = IOServiceMatching("IOAccelerator")

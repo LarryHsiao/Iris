@@ -1,6 +1,6 @@
 import Foundation
 
-struct ClaudeSession: Equatable, Identifiable {
+nonisolated struct ClaudeSession: Equatable, Identifiable {
     enum Status: String, Equatable {
         case thinking
         case tool
@@ -13,7 +13,7 @@ struct ClaudeSession: Equatable, Identifiable {
     let since: Date
 }
 
-struct ClaudeState: Equatable {
+nonisolated struct ClaudeState: Equatable {
     let sessions: [ClaudeSession]
 
     static let idle = ClaudeState(sessions: [])
@@ -25,7 +25,7 @@ struct ClaudeState: Equatable {
     }
 }
 
-enum ClaudeMonitor {
+nonisolated enum ClaudeMonitor {
     private static let staleAfter: TimeInterval = 180
 
     static let directory: URL = {

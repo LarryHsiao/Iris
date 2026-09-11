@@ -1,6 +1,6 @@
 import Foundation
 
-struct CallState: Equatable {
+nonisolated struct CallState: Equatable {
     let inCall: Bool
     let appName: String?
     let processName: String?
@@ -8,7 +8,7 @@ struct CallState: Equatable {
     static let idle = CallState(inCall: false, appName: nil, processName: nil)
 }
 
-enum CallMonitor {
+nonisolated enum CallMonitor {
     private static let callKeywords = [
         "call", "meeting", "conference", "huddle", "facetime", "video-conference"
     ]

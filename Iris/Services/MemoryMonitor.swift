@@ -1,7 +1,7 @@
 import Foundation
 import Darwin
 
-enum MemoryMonitor {
+nonisolated enum MemoryMonitor {
     static func sample() -> Double {
         var stats = vm_statistics64()
         let size = MemoryLayout<vm_statistics64>.stride / MemoryLayout<integer_t>.stride
