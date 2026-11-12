@@ -4,6 +4,8 @@ All notable changes to Iris are documented here.
 
 ## [Unreleased]
 
+## [1.9.0] — 2026-11-12
+
 ### Added
 - Typing-speed tile: a ring shows words per minute over a rolling
   5-second window while you type, and your personal best when you
