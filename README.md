@@ -22,6 +22,7 @@ A lightweight, always-on-top HUD for macOS — live system vitals and synced son
 - **Audio spectrum visualizer** — live FFT of the system audio output, rendered as bars that can sit above, below, or behind the lyric bar. Volume-scaled and fades out when playback is silent. First use prompts for Screen Recording access.
 - **On-call banner** — a compact chip lights up when you're in a call on Teams, Zoom, Slack, Discord, Webex, FaceTime, Skype, LINE, or Google Meet. No private APIs.
 - **Claude-thinking tile** — a rotating sparkle joins the tile row while any Claude Code session is mid-turn, with the elapsed seconds beneath it; vanishes when no session is live. Opt-in; needs the hook scripts shipped under `Iris/Scripts/claude-hooks/` (see below).
+- **Typing-speed tile** — a ring shows words per minute over a rolling 5-second window while you type, and your personal best when you stop; the arc is your speed against that best, amber when you match or beat it. Iris reads only the system's key-press count, never which keys, and nothing leaves the Mac. Opt-in under Settings → Content → Typing.
 - **Wi-Fi name & public IP** — opt-in row in the expanded network panel showing the current SSID and egress IP. SSID needs Location permission; the IP is fetched from `api.ipify.org`.
 - **Auto-hide on fullscreen** — overlay quietly steps aside when a fullscreen app takes the screen, and returns when you leave fullscreen.
 - **Launch at login** — toggle in Settings to start Iris with the system.
@@ -37,8 +38,8 @@ A lightweight, always-on-top HUD for macOS — live system vitals and synced son
 
 ## Requirements
 
-- macOS 14+
-- Xcode 15+
+- macOS 26.1+
+- Xcode 26.1+ (to build from source)
 - Spotify desktop app (for lyrics)
 
 ## Install
@@ -56,6 +57,8 @@ xattr -rd com.apple.quarantine /Applications/Iris.app
 ## Build
 
 Open `Iris.xcodeproj` in Xcode and run the `Iris` scheme.
+
+From a terminal, `./dev.sh` builds the Debug configuration, stops any running Iris, and launches the fresh build.
 
 ## Claude indicator (optional)
 
