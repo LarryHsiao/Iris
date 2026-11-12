@@ -4,6 +4,15 @@ All notable changes to Iris are documented here.
 
 ## [Unreleased]
 
+### Added
+- Typing-speed tile: a ring shows words per minute over a rolling
+  5-second window while you type, and your personal best when you
+  stop. The arc is live speed against that best, turning amber at or
+  above it. A best only counts after 5 seconds of unbroken typing.
+  Iris reads the system's key-down count only: it never sees which
+  keys are pressed, and nothing leaves the Mac. Off by default; opt in
+  under Settings → Content → Typing.
+
 ## [1.8.0] — 2026-04-30
 
 ### Added

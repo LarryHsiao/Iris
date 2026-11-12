@@ -425,6 +425,11 @@ struct LyricBarView: View {
         case .focus: FocusTile(timer: store.focus, showLabel: !settings.thinMode)
         case .calendar: EmptyView()
         case .claude: EmptyView()
+        case .typing: TypingTile(
+            wpm: store.typingWPM,
+            best: store.typingBest,
+            showLabel: !settings.thinMode
+        )
         }
     }
 
@@ -475,7 +480,7 @@ struct LyricBarView: View {
     private static func expandable(_ tile: Tile) -> Bool {
         switch tile {
         case .cpu, .gpu, .mem, .network, .calendar, .disk, .weather: return true
-        case .battery, .air, .focus, .claude: return false
+        case .battery, .air, .focus, .claude, .typing: return false
         }
     }
 

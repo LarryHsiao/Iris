@@ -25,6 +25,8 @@ final class MonitorStore {
     var callAppName: String?
     var callAppProcessName: String?
     var claudeState: ClaudeState = .idle
+    var typingWPM: Double?
+    var typingBest: Double = 0
     var spectrum: [Float] = Array(repeating: 0, count: AudioCapture.bandCount) {
         didSet {
             if (spectrum.max() ?? 0) > 0.01 {
@@ -115,6 +117,8 @@ final class MonitorStore {
                 since: Date().addingTimeInterval(-7)
             )
         ])
+        s.typingWPM = 72
+        s.typingBest = 128
         s.spectrum = (0..<AudioCapture.bandCount).map { i in
             Float(0.3 + 0.7 * abs(sin(Double(i) * 0.4)))
         }

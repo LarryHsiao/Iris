@@ -117,6 +117,12 @@ struct SettingsView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+            Section("Typing") {
+                Toggle("Show typing-speed tile", isOn: $draft.showTyping)
+                Text("Counts keystrokes to show words per minute. Never records which keys you press, and nothing leaves this Mac.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
             Section("Audio") {
                 Toggle("Show spectrum visualizer", isOn: $draft.showSpectrum)
                 Picker("Position", selection: $draft.spectrumPosition) {
@@ -534,6 +540,8 @@ private struct TilePreview: View {
             }
         case .claude:
             ClaudeTile(state: store.claudeState)
+        case .typing:
+            TypingTile(wpm: store.typingWPM, best: store.typingBest)
         }
     }
 

@@ -25,6 +25,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     private let fullscreen = FullscreenMonitor()
     private let wifi = WiFiInfoMonitor()
     private let calendar = CalendarMonitor()
+    private let typing = TypingMonitor()
     private var calendarTimer: Timer?
     private var timerCPU: Timer?
     private var timerTrack: Timer?
@@ -65,6 +66,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             self.syncFocusSettings()
             self.syncCalendar()
             self.syncAirQuality()
+            self.syncTyping()
         }
 
         fullscreen.onChange = { [weak self] _ in
@@ -79,6 +81,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         syncWiFiInfo()
         syncFocusSettings()
         syncCalendar()
+        typing.onUpdate = { [weak self] wpm, best in
+            self?.showTyping(wpm: wpm, best: best)
+        }
+        syncTyping()
         verifyNotificationAuthorizationIfNeeded()
 
         audio.onBands = { [weak self] bands in
@@ -230,6 +236,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         let (current, followUp) = calendar.upcomingEvents()
         store.calendarEvent = current
         store.calendarFollowUp = followUp
+    }
+
+    private func syncTyping() {
+        if settings.showTyping {
+            typing.start()
+        } else {
+            typing.stop()
+            store.typingWPM = nil
+        }
+    }
+
+    /// Writes only on change, so four polls a second do not redraw an idle bar.
+    private func showTyping(wpm: Double?, best: Double) {
+        if store.typingWPM != wpm { store.typingWPM = wpm }
+        if store.typingBest != best { store.typingBest = best }
     }
 
     private func syncFocusSettings() {

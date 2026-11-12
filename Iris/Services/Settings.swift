@@ -29,7 +29,7 @@ enum WeatherUnit: String, CaseIterable, Identifiable, Hashable {
 }
 
 enum Tile: String, CaseIterable, Identifiable, Hashable {
-    case network, cpu, gpu, mem, disk, battery, weather, air, focus, calendar, claude
+    case network, cpu, gpu, mem, disk, battery, weather, air, focus, calendar, claude, typing
 
     var id: String { rawValue }
 
@@ -46,10 +46,11 @@ enum Tile: String, CaseIterable, Identifiable, Hashable {
         case .focus: return "Focus"
         case .calendar: return "Calendar"
         case .claude: return "Claude"
+        case .typing: return "Typing"
         }
     }
 
-    static let defaultOrder: [Tile] = [.network, .cpu, .gpu, .mem, .disk, .battery, .weather, .air, .focus, .calendar, .claude]
+    static let defaultOrder: [Tile] = [.network, .cpu, .gpu, .mem, .disk, .battery, .weather, .air, .focus, .calendar, .claude, .typing]
 }
 
 @Observable
@@ -90,6 +91,7 @@ final class Settings {
     var thinMode: Bool
     var showClaude: Bool
     var claudeHooksRoot: String
+    var showTyping: Bool
 
     var onApplied: (() -> Void)?
 
@@ -131,7 +133,8 @@ final class Settings {
         calendarImminentMinutes: Double,
         thinMode: Bool,
         showClaude: Bool,
-        claudeHooksRoot: String
+        claudeHooksRoot: String,
+        showTyping: Bool
     ) {
         self.showLyrics = showLyrics
         self.showArtwork = showArtwork
@@ -169,6 +172,7 @@ final class Settings {
         self.thinMode = thinMode
         self.showClaude = showClaude
         self.claudeHooksRoot = claudeHooksRoot
+        self.showTyping = showTyping
     }
 
     func isVisible(_ tile: Tile) -> Bool {
@@ -184,6 +188,7 @@ final class Settings {
         case .focus: return showFocus
         case .calendar: return showCalendar
         case .claude: return showClaude
+        case .typing: return showTyping
         }
     }
 
@@ -200,6 +205,7 @@ final class Settings {
         case .focus: showFocus = value
         case .calendar: showCalendar = value
         case .claude: showClaude = value
+        case .typing: showTyping = value
         }
     }
 
@@ -240,6 +246,7 @@ final class Settings {
         static let thinMode = prefix + "thinMode"
         static let showClaude = prefix + "showClaude"
         static let claudeHooksRoot = prefix + "claudeHooksRoot"
+        static let showTyping = prefix + "showTyping"
     }
 
     static func load() -> Settings {
@@ -280,7 +287,8 @@ final class Settings {
             calendarImminentMinutes: d.object(forKey: Key.calendarImminentMinutes) as? Double ?? 5,
             thinMode: d.object(forKey: Key.thinMode) as? Bool ?? false,
             showClaude: d.object(forKey: Key.showClaude) as? Bool ?? false,
-            claudeHooksRoot: d.string(forKey: Key.claudeHooksRoot) ?? "~/.claude"
+            claudeHooksRoot: d.string(forKey: Key.claudeHooksRoot) ?? "~/.claude",
+            showTyping: d.object(forKey: Key.showTyping) as? Bool ?? false
         )
     }
 
@@ -328,6 +336,7 @@ final class Settings {
         d.set(thinMode, forKey: Key.thinMode)
         d.set(showClaude, forKey: Key.showClaude)
         d.set(claudeHooksRoot, forKey: Key.claudeHooksRoot)
+        d.set(showTyping, forKey: Key.showTyping)
     }
 
     func copy() -> Settings {
@@ -367,7 +376,8 @@ final class Settings {
             calendarImminentMinutes: calendarImminentMinutes,
             thinMode: thinMode,
             showClaude: showClaude,
-            claudeHooksRoot: claudeHooksRoot
+            claudeHooksRoot: claudeHooksRoot,
+            showTyping: showTyping
         )
     }
 
@@ -408,6 +418,7 @@ final class Settings {
         thinMode = other.thinMode
         showClaude = other.showClaude
         claudeHooksRoot = other.claudeHooksRoot
+        showTyping = other.showTyping
     }
 
 }
